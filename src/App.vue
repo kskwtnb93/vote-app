@@ -1,14 +1,17 @@
 <template>
   <div id="app">
     <v-app id="inspire">
-      <v-navigation-drawer v-model="drawer" app>
+      <v-navigation-drawer v-if="showSidebar" v-model="drawer" app>
         <SidebarComponent />
       </v-navigation-drawer>
 
       <v-app-bar app>
-        <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon
+          @click="drawer = !drawer"
+          v-if="showSidebar"
+        ></v-app-bar-nav-icon>
 
-        <v-toolbar-title>Application</v-toolbar-title>
+        <v-toolbar-title>Cytokine 投票アプリ</v-toolbar-title>
       </v-app-bar>
 
       <v-main>
@@ -25,9 +28,20 @@ export default {
   components: {
     SidebarComponent,
   },
+  mounted() {},
   data: () => ({
     drawer: null,
+    showSidebar: true,
   }),
+  beforeUpdate() {
+    if (this.$route.path.match(/login$/) || this.$route.path.match(/signup$/)) {
+      this.showSidebar = false;
+    } else {
+      this.showSidebar = true;
+    }
+
+    console.log(this.showSidebar);
+  },
 };
 </script>
 
