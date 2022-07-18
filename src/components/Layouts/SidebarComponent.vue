@@ -43,6 +43,8 @@ export default {
     links: [
       ["mdi-home", "Home", "/"],
       ["mdi-send", "About", "/about"],
+      ["mdi-login", "Login", "/login"],
+      ["mdi-logout", "Signup", "/signup"],
     ],
   }),
 };

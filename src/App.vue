@@ -12,7 +12,6 @@
       </v-app-bar>
 
       <v-main>
-        <!--  -->
         <router-view />
       </v-main>
     </v-app>
@@ -28,11 +27,6 @@ export default {
   },
   data: () => ({
     drawer: null,
-    //  selectedItem: 0,
-    //  links: [
-    //    ["mdi-home", "Home", "/"],
-    //    ["mdi-send", "About", "/about"],
-    //  ],
   }),
 };
 </script>
