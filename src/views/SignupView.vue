@@ -134,14 +134,29 @@ export default {
       this.$refs.form.resetValidation();
     },
     submit() {
-      console.log("submit call");
+      // console.log("submit call");
       firebase
         .auth()
         .createUserWithEmailAndPassword(this.email, this.password)
         .then(async (result) => {
           console.log("success", result);
+
+          // Authenticationへの登録
           await result.user.updateProfile({ displayName: this.name });
           console.log("update user", result.user);
+
+          // Cloud Firestoreへの登録
+          const usersRef = firebase.firestore().collection("users");
+          await usersRef
+            .add({
+              uid: result.user.uid,
+              displayName: result.user.displayName,
+              email: result.user.email,
+              registeredAt: firebase.firestore.Timestamp.now(),
+            })
+            .then((result) => {
+              console.log("success to create user", result);
+            });
 
           localStorage.message = "ユーザーの新規作成に成功しました。";
 
