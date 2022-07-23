@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-list>
-      <v-list-item>
-        <v-list-item-avatar>
+      <v-list-item class="avatar">
+        <v-list-item-avatar class="avatar__pic">
           <v-img src="https://cdn.vuetifyjs.com/images/john.png"></v-img>
         </v-list-item-avatar>
       </v-list-item>
@@ -49,3 +49,13 @@ export default {
   }),
 };
 </script>
+
+<style lang="scss" scoped>
+.avatar {
+  justify-content: center;
+
+  &__pic {
+    margin-right: 0 !important;
+  }
+}
+</style>
