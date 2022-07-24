@@ -15,7 +15,7 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: 'vote',
+    path: '/vote',
     name: 'vote',
     component: VoteView,
     meta: { requiresAuth: true }

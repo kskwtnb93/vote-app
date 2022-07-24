@@ -1,65 +1,44 @@
 <template>
-  <v-app id="inspire">
-    <SidebarComponent />
+  <div class="home">
+    <h2 class="page-title">{{ room.name }} 投票</h2>
 
-    <v-main>
-      <h1>{{ room ? rooms.name : "" }}</h1>
-      <v-container class="py-8 px-6" fluid>
-        <v-row>
-          <v-col v-for="card in cards" :key="card" cols="12">
-            <v-card>
-              <v-subheader></v-subheader>
-
-              <v-list two-line>
-                <template v-for="(data, index) in messages">
-                  <v-list-item :key="index">
-                    <v-list-item-avatar color="grey darken-1">
-                      <!-- <v-img v-if="data.photoURL" :src="data.photoURL"></v-img> -->
-                    </v-list-item-avatar>
-
-                    <v-list-item-content class="message">
-                      <v-list-item-subtitle>
-                        <!-- {{ data.message }} -->
-                      </v-list-item-subtitle>
-                    </v-list-item-content>
-                  </v-list-item>
-
-                  <!-- <v-divider
-                    v-if="index !== messages.length - 1"
-                    :key="`divider-${index}`"
-                    inset
-                  ></v-divider> -->
-                </template>
-              </v-list>
-            </v-card>
-          </v-col>
-        </v-row>
+    <v-form method="POST" ref="form" lazy-validation>
+      <v-container v-for="question in questions" :key="question.id" fluid>
+        <label class="form-section__title">{{ question.title }}</label>
+        <v-radio-group>
+          <v-radio
+            v-for="user in users"
+            :key="user.uid"
+            :for="question.uid"
+            :label="user.displayName"
+            :value="user.uid"
+            required
+          ></v-radio>
+        </v-radio-group>
       </v-container>
-
-      <v-textarea
-        v-model="body"
-        class="mx-2"
-        label="メッセージを送信する"
-        prepend-icon="mdi-comment"
-        auto-grow
-      ></v-textarea>
-
-      <v-btn class="mr-4" type="submit" :disabled="invalid" @click="submit">
-        submit
-      </v-btn>
-      <v-btn @click="clear">clear</v-btn>
-    </v-main>
-  </v-app>
+      <v-btn
+        type="submit"
+        onClick="console.log(document.forms[0].elements[0].value);"
+        >Submit</v-btn
+      >
+    </v-form>
+  </div>
 </template>
 
 <script>
 import firebase from "@/firebase/firebase";
-import SidebarComponent from "@/components/Layouts/SidebarComponent";
 
 export default {
+  name: "VoteView",
   components: {
-    SidebarComponent,
+    //  CreateRoom,
   },
+  data: () => ({
+    users: [],
+    room: "",
+    roomId: "",
+    questions: [],
+  }),
   async created() {
     // URLのパラメータからルームIDを取得
     this.roomId = this.$route.query.room_id;
@@ -75,104 +54,64 @@ export default {
     }
 
     this.room = roomDoc.data();
-    console.log("room", this.room);
-
-    //  const snapshot = await roomRef
-    //    .collection("messages")
-    //    .orderBy("createdAt", "asc")
-    //    .get();
-
-    //  snapshot.docs.map((doc) => {
-    //    this.messages.push(doc.data());
-    //  });
-
-    //  const chatRef = firebase.firestore().collection("chats");
-    //  //  console.log("chatref", chatRef);
-    //  const snapshot = await chatRef.get();
-    //  //  console.log(snapshot);
-
-    //  snapshot.forEach((doc) => {
-    //    // console.log(doc.data());
-    //    this.messages.push(doc.data());
-    //  });
+    console.log("room", this.room.name);
   },
-  data: () => ({
-    messages: [],
-    body: "",
-    roomId: "",
-    room: null,
-    cards: ["Today"],
-    drawer: null,
-    auth: null,
-  }),
   mounted() {
-    // ログイン情報を取得
-    this.auth = JSON.parse(sessionStorage.getItem("user"));
-    console.log(this.auth);
-
-    // メッセージ一覧作成 + 投稿をリアルタイムで更新（onSnapshot）
-    const roomRef = firebase.firestore().collection("rooms").doc(this);
-    roomRef
-      .collection("messages")
-      .orderBy("createdAt", "asc")
-      .onSnapshot((snapshot) => {
-        snapshot.docChanges().forEach((change) => {
-          console.log("new message", change.doc.data());
-          this.messages.push(change.doc.data());
-        });
-      });
-  },
-  computed: {
-    invalid() {
-      if (!this.body) {
-        console.log("invalid true");
-        return true;
-      } else {
-        console.log("invalid false");
-        return false;
-      }
-    },
+    this.getUsers();
+    this.getQuestions();
   },
   methods: {
-    clear() {
-      this.body = "";
-    },
-    submit() {
-      console.log(this.body);
-      // this.messages.push({ message: this.body });
-      // unshiftで配列のメッセージ一覧の一番初めにメッセージを追加する
-      // this.messages.push({
-      //   message: this.body,
-      //   name: this.auth.displayName,
-      //   photoURL: this.auth.photoURL,
-      //   createdAt: firebase.firestore.Timestamp.now(),
-      // });
-      // this.body = "";
+    async getUsers() {
+      this.users = [];
 
-      const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
-      roomRef
-        .collection("messages")
-        .add({
-          message: this.body,
-          name: this.auth.displayName,
-          photoURL: this.auth.photoURL,
-          createdAt: firebase.firestore.Timestamp.now(),
-        })
-        .then((result) => {
-          console.log("success", result);
-          this.body = "";
-        })
-        .catch((error) => {
-          console.log("fail", error);
-          alert("メッセージの送信に失敗しました。");
-        });
+      // ドキュメント取得
+      // ref = 参照的なニュアンスの意味
+      const usersRef = firebase.firestore().collection("users");
+      const snapshot = await usersRef.get();
+      // console.log("snapshot", snapshot);
+
+      snapshot.docs.map((doc) => {
+        // docsであれば配列として受け取れるのでmapを使って展開できる
+        const data = { ...doc.data() };
+        data.id = doc.id;
+
+        // data()メソッド使わないと見れない
+        //   console.log(data);
+        this.users.push(data);
+      });
+    },
+    async getQuestions() {
+      this.questions = [];
+
+      // ドキュメント取得
+      // ref = 参照的なニュアンスの意味
+      const questionsRef = firebase.firestore().collection("questions");
+      const snapshot = await questionsRef.get();
+      // console.log("snapshot", snapshot);
+
+      snapshot.docs.map((doc) => {
+        // docsであれば配列として受け取れるのでmapを使って展開できる
+        const data = { ...doc.data() };
+        data.id = doc.id;
+
+        // data()メソッド使わないと見れない
+        console.log(data);
+        this.questions.push(data);
+      });
     },
   },
 };
 </script>
 
-<style>
-.message {
+<style lang="scss">
+.page-title {
+  padding: 1.5em 16px;
   text-align: left;
+}
+.form-section {
+  &__title {
+    display: block;
+    text-align: left;
+  }
 }
 </style>
