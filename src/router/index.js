@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import AboutView from '../views/AboutView.vue'
+import VoteView from '../views/VoteView.vue'
 import LoginView from '../views/LoginView.vue'
 import SignupView from '../views/SignupView.vue'
 
@@ -15,9 +15,9 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/about',
-    name: 'about',
-    component: AboutView,
+    path: 'vote',
+    name: 'vote',
+    component: VoteView,
     meta: { requiresAuth: true }
   },
   {
