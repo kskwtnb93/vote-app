@@ -11,12 +11,14 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: HomeView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/about',
     name: 'about',
-    component: AboutView
+    component: AboutView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
@@ -35,5 +37,42 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+router.beforeEach((to, from, next) => {
+	const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+
+	if (requiresAuth) {
+		const user = sessionStorage.getItem('user')
+		// JSON.parse(user)でjsonからオブジェクト型に変換
+		console.log('session', JSON.parse(user));
+
+		if(!user) {
+			if (!user) {
+				next({
+					path: '/login',
+					query: { redirect: to.fullPath }
+				})
+			} else {
+				next()
+			}
+		} else {
+			next()
+		}
+
+		// firebase.auth().onAuthStateChanged( (user) => {
+		// 	if (!user) {
+		// 		next({
+		// 			path: '/login',
+		// 			query: { redirect: to.fullPath }
+		// 		})
+		// 	} else {
+		// 		next()
+		// 	}
+		// })
+	} else {
+		next()
+	}
+})
+
 
 export default router
