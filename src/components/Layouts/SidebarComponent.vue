@@ -4,7 +4,7 @@
       <v-list-item class="avatar">
         <v-list-item-avatar class="avatar__pic">
           <v-avatar color="indigo">
-            <v-icon> mdi-account-circle </v-icon>
+            <v-icon dark> mdi-account-circle </v-icon>
           </v-avatar>
         </v-list-item-avatar>
       </v-list-item>
@@ -157,5 +157,11 @@ export default {
   &__pic {
     margin-right: 0 !important;
   }
+}
+
+.v-avatar {
+  width: 40px !important;
+  min-width: 40px !important;
+  height: 40px !important;
 }
 </style>
