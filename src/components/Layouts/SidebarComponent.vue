@@ -59,7 +59,7 @@
               <v-row>
                 <v-col cols="12">
                   <v-menu
-                    v-model="menu2"
+                    v-model="menu1"
                     :close-on-content-click="false"
                     :nudge-right="40"
                     transition="scale-transition"
@@ -81,6 +81,7 @@
                       v-model="date"
                       locale="jp-ja"
                       :day-format="(date) => new Date(date).getDate()"
+                      @change="menu1 = false"
                     ></v-date-picker>
                   </v-menu>
                 </v-col>
@@ -121,6 +122,7 @@ export default {
     date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
       .toISOString()
       .substr(0, 10),
+    menu1: false,
   }),
   mounted() {
     this.auth = JSON.parse(sessionStorage.getItem("user"));
