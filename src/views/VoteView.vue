@@ -2,7 +2,7 @@
   <div class="home">
     <h2 class="page-title">{{ room.name }} 投票</h2>
 
-    <v-form method="POST" ref="form" lazy-validation>
+    <v-form id="form" method="post" ref="form" lazy-validation>
       <v-container v-for="question in questions" :key="question.id" fluid>
         <label class="form-section__title">{{ question.title }}</label>
         <v-radio-group>
@@ -10,17 +10,14 @@
             v-for="user in users"
             :key="user.uid"
             :for="question.uid"
+            :name="question.uid"
             :label="user.displayName"
             :value="user.uid"
             required
           ></v-radio>
         </v-radio-group>
       </v-container>
-      <v-btn
-        type="submit"
-        onClick="console.log(document.forms[0].elements[0].value);"
-        >Submit</v-btn
-      >
+      <v-btn type="button" @click="submitButton">Submit</v-btn>
     </v-form>
   </div>
 </template>
@@ -38,6 +35,7 @@ export default {
     room: "",
     roomId: "",
     questions: [],
+    answer: {},
   }),
   async created() {
     // URLのパラメータからルームIDを取得
@@ -98,6 +96,33 @@ export default {
         console.log(data);
         this.questions.push(data);
       });
+    },
+    submitButton() {
+      const form = document.getElementById("form");
+      // #form 内の値を取得
+      const formData = new FormData(form);
+      // firestore の参照元
+      const answerRef = firebase.firestore().collection("answers");
+
+      this.answer = {};
+      // オブジェクト作成
+      for (let value of formData.entries()) {
+        this.answer[value[0]] = value[1];
+      }
+      // 作成日情報を追加
+      this.answer.careatedAt = new Date();
+
+      // console.log(this.answer);
+
+      // firestore へフォーム入力値を送信
+      answerRef
+        .add(this.answer)
+        .then((result) => {
+          console.log("success to create answer", result);
+        })
+        .catch((error) => {
+          console.log("fail to create answer", error);
+        });
     },
   },
 };
