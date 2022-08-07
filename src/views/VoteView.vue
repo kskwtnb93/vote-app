@@ -102,7 +102,12 @@ export default {
       // #form 内の値を取得
       const formData = new FormData(form);
       // firestore の参照元
-      const answerRef = firebase.firestore().collection("answers");
+      const answerRef = firebase
+        .firestore()
+        .collection("rooms")
+        .doc(this.roomId)
+        .collection("votes");
+      // const answerRef = firebase.firestore().collection("answers");
 
       this.answer = {};
       // オブジェクト作成
