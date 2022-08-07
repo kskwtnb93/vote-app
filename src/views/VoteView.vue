@@ -53,24 +53,40 @@ export default {
     }
 
     this.room = roomDoc.data();
-    console.log("room", this.room.name);
+    //  console.log("room", this.room.name);
 
     // ユーザーのuidを取得
-    firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.userId = user.uid;
-        console.log(this.userId);
-      } else {
-        // ユーザー取得できなければTOPに遷移
-        this.$router.push("/");
-      }
-    });
   },
   mounted() {
+    this.checkAnsered();
     this.getUsers();
     this.getQuestions();
   },
   methods: {
+    async checkAnsered() {
+      // ドキュメント取得
+      const answeredRef = firebase
+        .firestore()
+        .collection("rooms")
+        .doc(this.roomId)
+        .collection("answered");
+      const snapshot = await answeredRef.get();
+      // sessionStorage からユーザーのuidを取得
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      // console.log("sessionから", user.uid);
+
+      snapshot.docs.map((doc) => {
+        // docsであれば配列として受け取れるのでmapを使って展開できる
+        // data()メソッド使わないと見れない
+        const data = { ...doc.data() };
+        //   console.log("firestoreから", data.uid);
+
+        if (user.uid === data.uid) {
+          console.log("投票済みuidが一致したのでTOPにリダイレクト");
+          this.$router.push("/");
+        }
+      });
+    },
     async getUsers() {
       this.users = [];
 
@@ -105,7 +121,7 @@ export default {
         data.id = doc.id;
 
         // data()メソッド使わないと見れない
-        console.log(data);
+        //   console.log(data);
         this.questions.push(data);
       });
     },

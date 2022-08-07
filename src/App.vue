@@ -39,8 +39,7 @@ export default {
     } else {
       this.showSidebar = true;
     }
-
-    console.log(this.showSidebar);
+    //  console.log(this.showSidebar);
   },
 };
 </script>
