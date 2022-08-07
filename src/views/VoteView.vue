@@ -36,6 +36,7 @@ export default {
     roomId: "",
     questions: [],
     answer: {},
+    userId: "",
   }),
   async created() {
     // URLのパラメータからルームIDを取得
@@ -53,6 +54,17 @@ export default {
 
     this.room = roomDoc.data();
     console.log("room", this.room.name);
+
+    // ユーザーのuidを取得
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        this.userId = user.uid;
+        console.log(this.userId);
+      } else {
+        // ユーザー取得できなければTOPに遷移
+        this.$router.push("/");
+      }
+    });
   },
   mounted() {
     this.getUsers();
@@ -102,12 +114,17 @@ export default {
       // #form 内の値を取得
       const formData = new FormData(form);
       // firestore の参照元
-      const answerRef = firebase
+      const votesRef = firebase
         .firestore()
         .collection("rooms")
         .doc(this.roomId)
         .collection("votes");
       // const answerRef = firebase.firestore().collection("answers");
+      const answeredRef = firebase
+        .firestore()
+        .collection("rooms")
+        .doc(this.roomId)
+        .collection("answered");
 
       this.answer = {};
       // オブジェクト作成
@@ -120,10 +137,19 @@ export default {
       // console.log(this.answer);
 
       // firestore へフォーム入力値を送信
-      answerRef
+      votesRef
         .add(this.answer)
         .then((result) => {
           console.log("success to create answer", result);
+
+          answeredRef
+            .add({ uid: this.userId })
+            .then((result) => {
+              console.log("success to create answered", result);
+            })
+            .catch((error) => {
+              console.log("fail to create answered", error);
+            });
         })
         .catch((error) => {
           console.log("fail to create answer", error);
