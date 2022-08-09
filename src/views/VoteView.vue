@@ -1,24 +1,40 @@
 <template>
   <div class="home">
-    <h2 class="page-title">{{ room.name }} 投票</h2>
+    <v-overlay v-show="this.loading">
+      <v-progress-circular
+        :width="3"
+        color="white"
+        indeterminate
+      ></v-progress-circular>
+    </v-overlay>
 
-    <v-form id="form" method="post" ref="form" lazy-validation>
-      <v-container v-for="question in questions" :key="question.id" fluid>
-        <label class="form-section__title">{{ question.title }}</label>
-        <v-radio-group>
-          <v-radio
-            v-for="user in users"
-            :key="user.uid"
-            :for="question.uid"
-            :name="question.uid"
-            :label="user.displayName"
-            :value="user.uid"
-            required
-          ></v-radio>
-        </v-radio-group>
-      </v-container>
-      <v-btn type="button" @click="submitButton">Submit</v-btn>
-    </v-form>
+    <div v-show="!this.loading">
+      <h2 class="page-title">{{ room.name }} 投票</h2>
+
+      <div v-show="this.answered">
+        <p>この日は投票済みです。</p>
+      </div>
+
+      <div v-show="!this.answered && !this.loading">
+        <v-form id="form" method="post" ref="form" lazy-validation>
+          <v-container v-for="question in questions" :key="question.id" fluid>
+            <label class="form-section__title">{{ question.title }}</label>
+            <v-radio-group>
+              <v-radio
+                v-for="user in users"
+                :key="user.uid"
+                :for="question.uid"
+                :name="question.uid"
+                :label="user.displayName"
+                :value="user.uid"
+                required
+              ></v-radio>
+            </v-radio-group>
+          </v-container>
+          <v-btn type="button" @click="submitButton">Submit</v-btn>
+        </v-form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -37,6 +53,8 @@ export default {
     questions: [],
     answer: {},
     userId: "",
+    answered: false,
+    loading: true,
   }),
   async created() {
     // URLのパラメータからルームIDを取得
@@ -56,6 +74,9 @@ export default {
     //  console.log("room", this.room.name);
 
     // ユーザーのuidを取得
+    const user = JSON.parse(sessionStorage.getItem("user"));
+    this.userId = user.uid;
+    //  console.log(this.userId);
   },
   mounted() {
     this.checkAnsered();
@@ -82,8 +103,9 @@ export default {
         //   console.log("firestoreから", data.uid);
 
         if (user.uid === data.uid) {
-          console.log("投票済みuidが一致したのでTOPにリダイレクト");
-          this.$router.push("/");
+          //  console.log("投票済みuidが一致したのでTOPにリダイレクト");
+          //  this.$router.push("/");
+          this.answered = true;
         }
       });
     },
@@ -123,6 +145,11 @@ export default {
         // data()メソッド使わないと見れない
         //   console.log(data);
         this.questions.push(data);
+
+        // ローディングしている感出すため0.5秒後 this.loading 更新
+        setTimeout(() => {
+          this.loading = false;
+        }, 500);
       });
     },
     submitButton() {
@@ -135,7 +162,6 @@ export default {
         .collection("rooms")
         .doc(this.roomId)
         .collection("votes");
-      // const answerRef = firebase.firestore().collection("answers");
       const answeredRef = firebase
         .firestore()
         .collection("rooms")
@@ -148,7 +174,7 @@ export default {
         this.answer[value[0]] = value[1];
       }
       // 作成日情報を追加
-      this.answer.careatedAt = new Date();
+      this.answer.createdAt = new Date();
 
       // console.log(this.answer);
 
@@ -166,6 +192,9 @@ export default {
             .catch((error) => {
               console.log("fail to create answered", error);
             });
+
+          // TOPへリダイレクト
+          this.$router.push("/");
         })
         .catch((error) => {
           console.log("fail to create answer", error);
