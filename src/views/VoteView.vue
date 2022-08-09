@@ -1,24 +1,29 @@
 <template>
   <div class="home">
-    <v-overlay v-show="this.loading">
+    <div class="loading-wrapper" v-if="this.loading">
       <v-progress-circular
         :width="3"
-        color="white"
+        color="blue"
         indeterminate
       ></v-progress-circular>
-    </v-overlay>
+    </div>
 
-    <div v-show="!this.loading">
+    <div v-if="!this.loading">
       <h2 class="page-title">{{ room.name }} 投票</h2>
 
-      <div v-show="this.answered">
+      <div v-if="this.answered">
         <p>この日は投票済みです。</p>
       </div>
 
-      <div v-show="!this.answered && !this.loading">
-        <v-form id="form" method="post" ref="form" lazy-validation>
-          <v-container v-for="question in questions" :key="question.id" fluid>
-            <label class="form-section__title">{{ question.title }}</label>
+      <div v-if="!this.answered && !this.loading">
+        <v-form id="form" class="form" method="post" ref="form" lazy-validation>
+          <v-card
+            class="form__item"
+            v-for="question in questions"
+            :key="question.id"
+            fluid
+          >
+            <label class="form__item__title">{{ question.title }}</label>
             <v-radio-group>
               <v-radio
                 v-for="user in users"
@@ -30,8 +35,17 @@
                 required
               ></v-radio>
             </v-radio-group>
-          </v-container>
-          <v-btn type="button" @click="submitButton">Submit</v-btn>
+          </v-card>
+
+          <v-btn
+            class="form__submitBtn"
+            type="button"
+            color="pink"
+            dark
+            large
+            @click="submitButton"
+            >上記の内容で投票する</v-btn
+          >
         </v-form>
       </div>
     </div>
@@ -59,24 +73,18 @@ export default {
   async created() {
     // URLのパラメータからルームIDを取得
     this.roomId = this.$route.query.room_id;
-    //  console.log(this.roomId);
-
     // コレクション：room を参照、さらにdocメソッドでルームIDを指定
     const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
     const roomDoc = await roomRef.get();
-
     // ルームIDが存在しない場合のリダイレクト処理
     if (!roomDoc.exists) {
       await this.$router.push("/");
     }
-
     this.room = roomDoc.data();
-    //  console.log("room", this.room.name);
 
     // ユーザーのuidを取得
     const user = JSON.parse(sessionStorage.getItem("user"));
     this.userId = user.uid;
-    //  console.log(this.userId);
   },
   mounted() {
     this.checkAnsered();
@@ -204,15 +212,39 @@ export default {
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.home {
+  max-width: 750px;
+  height: 100%;
+  margin: 0 auto;
+}
+.loading-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
 .page-title {
-  padding: 1.5em 16px;
+  padding: 1.5em 12px;
   text-align: left;
 }
-.form-section {
-  &__title {
-    display: block;
-    text-align: left;
+.form {
+  padding-bottom: 6em;
+
+  &__item {
+    margin: 0 12px 24px;
+    padding: 24px;
+
+    &__title {
+      display: block;
+      text-align: left;
+    }
+  }
+
+  &__submitBtn {
+    min-width: 300px;
+    margin-top: 1.5em;
   }
 }
 </style>
