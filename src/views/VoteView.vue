@@ -12,7 +12,7 @@
       <h2 class="page-title">{{ room.name }} 投票</h2>
 
       <div v-if="this.answered">
-        <p>この日は投票済みです。</p>
+        <p>この回は投票済みです。</p>
       </div>
 
       <div v-if="!this.answered && !this.loading">

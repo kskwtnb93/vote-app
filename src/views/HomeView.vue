@@ -107,53 +107,37 @@ export default {
     CreateRoom,
   },
   data: () => ({
-    //  users: [],
     rooms: [],
   }),
   mounted() {
-    //  this.getUsers();
     this.getRooms();
+
+    // エラーになるため不使用：参照したいデータ１階層目だと onSnapshot() 使用できない？
+    // ↓
+    // ルーム一覧作成 + 投稿をリアルタイムで更新（onSnapshot）
+    //  const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
+    //  roomRef
+    //    .collection("messages")
+    //    .orderBy("createdAt", "asc")
+    //    .onSnapshot((snapshot) => {
+    //      snapshot.docChanges().forEach((change) => {
+    //        console.log("new message", change.doc.data());
+    //        this.messages.push(change.doc.data());
+    //      });
+    //    });
   },
   methods: {
-    //  async getUsers() {
-    //    this.users = [];
-
-    //    // ドキュメント取得
-    //    // ref = 参照的なニュアンスの意味
-    //    const usersRef = firebase.firestore().collection("users");
-    //    const snapshot = await usersRef.get();
-    //    console.log("snapshot", snapshot);
-
-    //    // snapshotがオブジェクト型なのでmapではなくforEach使わないと展開できない
-    //    // snapshot.forEach((doc) => {
-    //    //   // data()メソッド使わないと見れない
-    //    //   console.log(doc.data());
-    //    // });
-
-    //    snapshot.docs.map((doc) => {
-    //      // docsであれば配列として受け取れるのでmapを使って展開できる
-    //      const data = { ...doc.data() };
-    //      data.id = doc.id;
-
-    //      // data()メソッド使わないと見れない
-    //      console.log(data);
-    //      this.users.push(data);
-    //    });
-    //  },
     async getRooms() {
       this.rooms = [];
-
       // ドキュメント取得
       // ref = 参照的なニュアンスの意味
       const roomsRef = firebase.firestore().collection("rooms");
-      const snapshot = await roomsRef.get();
-      // console.log("snapshot", snapshot);
+      const snapshot = await roomsRef.orderBy("createdAt", "desc").get();
 
       snapshot.docs.map((doc) => {
         // docsであれば配列として受け取れるのでmapを使って展開できる
         const data = { ...doc.data() };
         data.id = doc.id;
-
         // data()メソッド使わないと見れない
         //   console.log(data);
         this.rooms.push(data);

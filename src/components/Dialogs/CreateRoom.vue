@@ -102,6 +102,7 @@ export default {
         .then((result) => {
           console.log("success to create room", result);
           this.dialog = false;
+          location.reload();
         });
     },
   },
