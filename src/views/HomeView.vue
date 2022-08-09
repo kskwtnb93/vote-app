@@ -147,7 +147,7 @@ export default {
       // ref = 参照的なニュアンスの意味
       const roomsRef = firebase.firestore().collection("rooms");
       const snapshot = await roomsRef.get();
-      console.log("snapshot", snapshot);
+      // console.log("snapshot", snapshot);
 
       snapshot.docs.map((doc) => {
         // docsであれば配列として受け取れるのでmapを使って展開できる
@@ -155,7 +155,7 @@ export default {
         data.id = doc.id;
 
         // data()メソッド使わないと見れない
-        console.log(data);
+        //   console.log(data);
         this.rooms.push(data);
       });
     },
