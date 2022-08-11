@@ -112,7 +112,7 @@ export default {
   mounted() {
     this.getRooms();
 
-    // エラーになるため不使用：参照したいデータ１階層目だと onSnapshot() 使用できない？
+    // エラーになるため不使用：firestore、参照したいデータ１階層目だと onSnapshot() 使用できない？
     // ↓
     // ルーム一覧作成 + 投稿をリアルタイムで更新（onSnapshot）
     //  const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);

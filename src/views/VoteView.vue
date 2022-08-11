@@ -16,7 +16,14 @@
       </div>
 
       <div v-if="!this.answered && !this.loading">
-        <v-form id="form" class="form" method="post" ref="form" lazy-validation>
+        <v-form
+          id="form"
+          name="voteForm"
+          class="form"
+          method="post"
+          ref="form"
+          lazy-validation
+        >
           <v-card
             class="form__item"
             v-for="question in questions"
@@ -32,6 +39,7 @@
                 :name="question.uid"
                 :label="user.displayName"
                 :value="user.uid"
+                @change="formValidation"
                 required
               ></v-radio>
             </v-radio-group>
@@ -40,10 +48,9 @@
           <v-btn
             class="form__submitBtn"
             type="button"
-            color="pink"
-            dark
+            color="primary"
             large
-            @click="submitButton"
+            :disabled="this.submitDisable"
             >上記の内容で投票する</v-btn
           >
         </v-form>
@@ -69,6 +76,7 @@ export default {
     userId: "",
     answered: false,
     loading: true,
+    submitDisable: true,
   }),
   async created() {
     // URLのパラメータからルームIDを取得
@@ -181,7 +189,7 @@ export default {
       for (let value of formData.entries()) {
         this.answer[value[0]] = value[1];
       }
-      // 作成日情報を追加
+      // 回答日情報を追加
       this.answer.createdAt = new Date();
 
       // console.log(this.answer);
@@ -207,6 +215,21 @@ export default {
         .catch((error) => {
           console.log("fail to create answer", error);
         });
+    },
+    formValidation() {
+      let answerItemCount =
+        document.voteForm.querySelectorAll(".form__item").length;
+      let answeredCount = document.voteForm.querySelectorAll(":checked").length;
+
+      console.log("回答項目数", answerItemCount);
+      console.log("回答済み数", answeredCount);
+
+      if (answerItemCount <= answeredCount + 1) {
+        console.log("送信可能");
+        this.submitDisable = false;
+      } else {
+        this.submitDisable = true;
+      }
     },
   },
 };
@@ -245,6 +268,9 @@ export default {
   &__submitBtn {
     min-width: 300px;
     margin-top: 1.5em;
+
+    &:disabled {
+    }
   }
 }
 </style>
