@@ -50,10 +50,57 @@
             type="button"
             color="primary"
             large
+            @click="
+              startConfirm();
+              createConfirmData();
+            "
             :disabled="this.submitDisable"
             >上記の内容で投票する</v-btn
           >
         </v-form>
+
+        <v-dialog
+          class="confirm-dialog"
+          v-model="dialog"
+          persistent
+          max-width="600px"
+        >
+          <v-card class="pb-4">
+            <v-card-subtitle class="pa-6">
+              <span
+                >送信後は修正できません。<br />以下の内容で投票しますが宜しいですか？</span
+              >
+            </v-card-subtitle>
+
+            <v-card-text>
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <ul class="confirm-dialog__list">
+                      <li
+                        class="confirm-dialog__list__item"
+                        v-for="(value, key, index) in confirmData"
+                        :key="index"
+                      >
+                        {{ key }}：{{ value }}
+                      </li>
+                    </ul>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card-text>
+
+            <v-card-actions class="confirm-dialog__actions">
+              <v-btn color="secondary" @click="dialog = false">
+                回答を修正する
+              </v-btn>
+
+              <v-btn color="primary" @click="sendVotes">
+                この内容で投票する
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
       </div>
     </div>
   </div>
@@ -73,10 +120,12 @@ export default {
     roomId: "",
     questions: [],
     answer: {},
+    confirmData: {},
     userId: "",
     answered: false,
     loading: true,
     submitDisable: true,
+    dialog: false,
   }),
   async created() {
     // URLのパラメータからルームIDを取得
@@ -168,10 +217,63 @@ export default {
         }, 500);
       });
     },
-    submitButton() {
+    formValidation() {
+      let answerItemCount =
+        document.voteForm.querySelectorAll(".form__item").length;
+      let answeredCount = document.voteForm.querySelectorAll(":checked").length;
+
+      // console.log("回答項目数", answerItemCount);
+      // console.log("回答済み数", answeredCount);
+
+      if (answerItemCount <= answeredCount + 1) {
+        //   console.log("送信可能");
+        this.submitDisable = false;
+      } else {
+        this.submitDisable = true;
+      }
+    },
+    startConfirm() {
       const form = document.getElementById("form");
       // #form 内の値を取得
       const formData = new FormData(form);
+
+      this.answer = {};
+      // オブジェクト作成
+      for (let value of formData.entries()) {
+        this.answer[value[0]] = value[1];
+      }
+      // 回答日情報を追加
+      this.answer.createdAt = new Date();
+      // console.log(this.answer);
+    },
+    createConfirmData() {
+      // console.log(this.answer);
+
+      for (let value of Object.entries(this.answer)) {
+        let questionTitle = "";
+        let userName = "";
+
+        this.questions.forEach(function (question) {
+          if (question.uid === value[0]) {
+            questionTitle = question.title;
+          }
+        });
+
+        this.users.forEach(function (user) {
+          if (user.uid === value[1]) {
+            userName = user.displayName;
+          }
+        });
+
+        if (questionTitle != "" && userName != "") {
+          this.confirmData[questionTitle] = userName;
+        }
+      }
+
+      // console.log(this.confirmData);
+      this.dialog = true;
+    },
+    sendVotes() {
       // firestore の参照元
       const votesRef = firebase
         .firestore()
@@ -183,16 +285,6 @@ export default {
         .collection("rooms")
         .doc(this.roomId)
         .collection("answered");
-
-      this.answer = {};
-      // オブジェクト作成
-      for (let value of formData.entries()) {
-        this.answer[value[0]] = value[1];
-      }
-      // 回答日情報を追加
-      this.answer.createdAt = new Date();
-
-      // console.log(this.answer);
 
       // firestore へフォーム入力値を送信
       votesRef
@@ -215,21 +307,6 @@ export default {
         .catch((error) => {
           console.log("fail to create answer", error);
         });
-    },
-    formValidation() {
-      let answerItemCount =
-        document.voteForm.querySelectorAll(".form__item").length;
-      let answeredCount = document.voteForm.querySelectorAll(":checked").length;
-
-      console.log("回答項目数", answerItemCount);
-      console.log("回答済み数", answeredCount);
-
-      if (answerItemCount <= answeredCount + 1) {
-        console.log("送信可能");
-        this.submitDisable = false;
-      } else {
-        this.submitDisable = true;
-      }
     },
   },
 };
@@ -268,9 +345,23 @@ export default {
   &__submitBtn {
     min-width: 300px;
     margin-top: 1.5em;
+  }
+}
 
-    &:disabled {
+.confirm-dialog {
+  &__list {
+    width: max-content;
+    margin: 0 auto;
+
+    &__item {
+      width: max-content;
+      text-align: left;
     }
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: center;
   }
 }
 </style>
