@@ -75,15 +75,26 @@ export default {
       .toISOString()
       .substr(0, 10),
     menu: false,
+    allUsers: 0,
   }),
   mounted() {
     this.auth = JSON.parse(sessionStorage.getItem("user"));
+    this.countAllUsers();
   },
   methods: {
     getAuth() {
       return firebase.auth().onAuthStateChanged((user) => {
         return user;
       });
+    },
+    async countAllUsers() {
+      // ドキュメント取得
+      // ref = 参照的なニュアンスの意味
+      const usersRef = firebase.firestore().collection("users");
+      const snapshot = await usersRef.get();
+      // console.log("snapshot", snapshot);
+
+      this.allUsers = snapshot.docs.length;
     },
     async createRoom() {
       const roomRef = firebase.firestore().collection("rooms");
@@ -92,6 +103,7 @@ export default {
         .add({
           name: this.date,
           createdAt: firebase.firestore.Timestamp.now(),
+          allUsers: this.allUsers,
         })
         .then((result) => {
           console.log("success to create room", result);

@@ -51,7 +51,7 @@
             </td>
             <!-- <td>受付中／締め切り／開票済</td> -->
             <td>受付中／開票済</td>
-            <td>16／20</td>
+            <td>16／{{ room.allUsers > 0 ? room.allUsers : 0 }}</td>
             <!-- <td>
               <v-btn>投票する</v-btn>
             </td>
