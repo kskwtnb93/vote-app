@@ -50,7 +50,7 @@
               {{ room.name }}
             </td>
             <!-- <td>受付中／締め切り／開票済</td> -->
-            <td>受付中／開票済</td>
+            <td :class="room.status.value">{{ room.status.title }}</td>
             <td>
               {{ room.answered.length }}
               ／{{ room.allUsers > 0 ? room.allUsers : 0 }}
@@ -193,6 +193,11 @@ export default {
     td {
       text-align: left;
       padding: 16px !important;
+
+      &.accepting {
+        color: green;
+        font-weight: bold;
+      }
 
       .v-btn {
         margin-right: 0.5rem;

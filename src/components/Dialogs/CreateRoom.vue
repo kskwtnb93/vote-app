@@ -104,6 +104,10 @@ export default {
           name: this.date,
           createdAt: firebase.firestore.Timestamp.now(),
           allUsers: this.allUsers,
+          status: {
+            title: "受付中",
+            value: "accepting",
+          },
           answered: [],
         })
         .then((result) => {
