@@ -52,7 +52,7 @@
             <!-- <td>受付中／締め切り／開票済</td> -->
             <td>受付中／開票済</td>
             <td>
-              {{ rooms.length }}
+              {{ room.answered.length }}
               ／{{ room.allUsers > 0 ? room.allUsers : 0 }}
             </td>
             <!-- <td>

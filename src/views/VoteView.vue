@@ -304,6 +304,9 @@ export default {
             })
             .then((result) => {
               console.log("success to create answered", result);
+
+              // TOPへリダイレクト
+              this.$router.push("/");
             })
             .catch((error) => {
               console.log("fail to create answered", error);
@@ -317,9 +320,6 @@ export default {
           //    .catch((error) => {
           //      console.log("fail to create answered", error);
           //    });
-
-          // TOPへリダイレクト
-          this.$router.push("/");
         })
         .catch((error) => {
           console.log("fail to create answer", error);
