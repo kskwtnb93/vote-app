@@ -1,17 +1,15 @@
 <template>
-  <v-dialog v-model="dialog" persistent max-width="290">
+  <v-dialog v-model="dialog" persistent max-width="360">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn color="primary" dark v-bind="attrs" v-on="on"
-        >この投票ルームを削除する</v-btn
-      >
+      <v-btn v-bind="attrs" v-on="on">この投票ルームを削除する</v-btn>
     </template>
 
     <v-card>
       <v-card-title class="text-h5">
-        削除を実行してよろしいですか？
+        投票ルームの削除を実行してよろしいですか？
       </v-card-title>
       <v-card-text
-        >削除後は復元できませんが、本当に削除を実行してよろしいでしょうか？</v-card-text
+        >削除後は投票ルームを復元できません。<br />削除を実行してよろしいでしょうか？</v-card-text
       >
       <v-card-actions>
         <v-spacer></v-spacer>
