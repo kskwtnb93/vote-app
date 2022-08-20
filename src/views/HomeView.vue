@@ -68,7 +68,7 @@
                 </v-btn>
                 <!-- <v-btn>投票を締め切る</v-btn> -->
                 <v-btn>投票結果を見る</v-btn>
-                <!-- <v-btn>投票結果を見る</v-btn> -->
+                <DeleteRoom :roomId="room.id" />
               </div>
             </td>
           </tr>
@@ -100,11 +100,13 @@
 <script>
 import firebase from "@/firebase/firebase";
 import CreateRoom from "@/components/Dialogs/CreateRoom.vue";
+import DeleteRoom from "../components/Dialogs/DeleteRoom.vue";
 
 export default {
   name: "HomeView",
   components: {
     CreateRoom,
+    DeleteRoom,
   },
   data: () => ({
     rooms: [],
@@ -173,6 +175,7 @@ export default {
 
 .v-data-table {
   border-bottom: thin solid rgba(0, 0, 0, 0.12);
+  margin-bottom: 6em;
 
   table {
     table-layout: fixed;
