@@ -34,7 +34,7 @@
           <tr>
             <th class="text-left">ルーム名</th>
             <th class="text-left">投票状況</th>
-            <th class="text-left">投票人数</th>
+            <th class="text-left">投票済人数</th>
             <!-- <th class="text-left"></th>
             <th class="text-left"></th>
             <th class="text-left"></th> -->
@@ -51,7 +51,10 @@
             </td>
             <!-- <td>受付中／締め切り／開票済</td> -->
             <td>受付中／開票済</td>
-            <td>16／{{ room.allUsers > 0 ? room.allUsers : 0 }}</td>
+            <td>
+              {{ rooms.length }}
+              ／{{ room.allUsers > 0 ? room.allUsers : 0 }}
+            </td>
             <!-- <td>
               <v-btn>投票する</v-btn>
             </td>
