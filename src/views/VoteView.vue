@@ -171,25 +171,17 @@ export default {
   methods: {
     async checkAnsered() {
       // ドキュメント取得
-      const answeredRef = firebase
-        .firestore()
-        .collection("rooms")
-        .doc(this.roomId)
-        .collection("answered");
-      const snapshot = await answeredRef.get();
+      const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
+      const roomDoc = await roomRef.get();
+      const roomData = roomDoc.data();
       // sessionStorage からユーザーのuidを取得
       const user = JSON.parse(sessionStorage.getItem("user"));
       // console.log("sessionから", user.uid);
 
-      snapshot.docs.map((doc) => {
-        // docsであれば配列として受け取れるのでmapを使って展開できる
-        // data()メソッド使わないと見れない
-        const data = { ...doc.data() };
-        //   console.log("firestoreから", data.uid);
+      roomData.answered.map((answeredIds) => {
+        //   console.log("firestoreから", answeredIds);
 
-        if (user.uid === data.uid) {
-          //  console.log("投票済みuidが一致したのでTOPにリダイレクト");
-          //  this.$router.push("/");
+        if (user.uid === answeredIds) {
           this.answered = true;
         }
       });
@@ -295,16 +287,9 @@ export default {
     },
     sendVotes() {
       // firestore の参照元
-      const votesRef = firebase
-        .firestore()
-        .collection("rooms")
-        .doc(this.roomId)
-        .collection("votes");
-      const answeredRef = firebase
-        .firestore()
-        .collection("rooms")
-        .doc(this.roomId)
-        .collection("answered");
+      const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
+      const votesRef = roomRef.collection("votes");
+      // const answeredRef = roomRef.collection("answered");
 
       // firestore へフォーム入力値を送信
       votesRef
@@ -312,14 +297,26 @@ export default {
         .then((result) => {
           console.log("success to create answer", result);
 
-          answeredRef
-            .add({ uid: this.userId })
+          roomRef
+            .update({
+              // 配列型のフィールドに追加：firebase.firestore.FieldValue.arrayUnion()
+              answered: firebase.firestore.FieldValue.arrayUnion(this.userId),
+            })
             .then((result) => {
               console.log("success to create answered", result);
             })
             .catch((error) => {
               console.log("fail to create answered", error);
             });
+
+          //  answeredRef
+          //    .add({ uid: this.userId })
+          //    .then((result) => {
+          //      console.log("success to create answered", result);
+          //    })
+          //    .catch((error) => {
+          //      console.log("fail to create answered", error);
+          //    });
 
           // TOPへリダイレクト
           this.$router.push("/");

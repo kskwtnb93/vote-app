@@ -104,6 +104,7 @@ export default {
           name: this.date,
           createdAt: firebase.firestore.Timestamp.now(),
           allUsers: this.allUsers,
+          answered: [],
         })
         .then((result) => {
           console.log("success to create room", result);
