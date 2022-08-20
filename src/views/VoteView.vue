@@ -8,6 +8,15 @@
       ></v-progress-circular>
     </div>
 
+    <v-dialog v-model="failedDialog" max-width="360">
+      <v-card>
+        <v-card-title class="text-h5"></v-card-title>
+        <v-card-text>
+          この投票ルームは削除されたか見つかりませんでした。<br />５秒後に一覧ページに移動します。
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+
     <div v-if="!this.loading">
       <h2 class="page-title">{{ room.name }} 投票</h2>
 
@@ -61,7 +70,7 @@
 
         <v-dialog
           class="confirm-dialog"
-          v-model="dialog"
+          v-model="confirmDialog"
           persistent
           max-width="600px"
         >
@@ -125,7 +134,9 @@ export default {
     answered: false,
     loading: true,
     submitDisable: true,
-    dialog: false,
+    confirmDialog: false,
+    failedDialog: false,
+    answeredUsers: 0,
   }),
   async created() {
     // URLのパラメータからルームIDを取得
@@ -135,7 +146,16 @@ export default {
     const roomDoc = await roomRef.get();
     // ルームIDが存在しない場合のリダイレクト処理
     if (!roomDoc.exists) {
-      await this.$router.push("/");
+      // ローディング演出を中止
+      this.loading = false;
+
+      // ルームIDが見つからなかったことを通知するダイアログを表示
+      this.failedDialog = true;
+
+      // ５秒後にリダイレクト実行
+      await setTimeout(() => {
+        this.$router.push("/");
+      }, 5000);
     }
     this.room = roomDoc.data();
 
@@ -271,7 +291,7 @@ export default {
       }
 
       // console.log(this.confirmData);
-      this.dialog = true;
+      this.confirmDialog = true;
     },
     sendVotes() {
       // firestore の参照元
