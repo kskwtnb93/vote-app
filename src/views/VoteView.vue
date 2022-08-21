@@ -8,16 +8,16 @@
       ></v-progress-circular>
     </div>
 
-    <v-dialog v-model="failedDialog" max-width="360">
+    <v-dialog v-model="failedDialog" persistent max-width="360">
       <v-card>
         <v-card-title class="text-h5"></v-card-title>
         <v-card-text>
-          この投票ルームは削除されたか見つかりませんでした。<br />５秒後に一覧ページに移動します。
+          投票が〆切られたか、投票ルームが削除されたため投票できません。<br />５秒後に一覧ページに移動します。
         </v-card-text>
       </v-card>
     </v-dialog>
 
-    <div v-if="!this.loading">
+    <div v-if="!this.loading && !this.failedDialog">
       <h2 class="page-title">{{ room.name }} 投票</h2>
 
       <div v-if="this.answered">
@@ -142,15 +142,17 @@ export default {
   async created() {
     // URLのパラメータからルームIDを取得
     this.roomId = this.$route.query.room_id;
-    // コレクション：room を参照、さらにdocメソッドでルームIDを指定
+
+    // コレクション：room を参照、さらにdoc()でルームIDを指定
     const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
     const roomDoc = await roomRef.get();
+
     // ルームIDが存在しない場合のリダイレクト処理
     if (!roomDoc.exists) {
       // ローディング演出を中止
       this.loading = false;
 
-      // ルームIDが見つからなかったことを通知するダイアログを表示
+      // ダイアログを表示
       this.failedDialog = true;
 
       // ５秒後にリダイレクト実行
@@ -159,6 +161,20 @@ export default {
       }, 5000);
     }
     this.room = roomDoc.data();
+
+    // 投票締め切り後にアクセスしてきた場合のリダイレクト処理
+    if (this.room.status.value === "end") {
+      // ローディング演出を中止
+      this.loading = false;
+
+      // ダイアログを表示
+      this.failedDialog = true;
+
+      // ５秒後にリダイレクト実行
+      await setTimeout(() => {
+        this.$router.push("/");
+      }, 5000);
+    }
 
     // ユーザーのuidを取得
     const user = JSON.parse(sessionStorage.getItem("user"));

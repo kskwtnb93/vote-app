@@ -34,7 +34,7 @@
           <tr>
             <th class="text-left">ルーム名</th>
             <th class="text-left">投票状況</th>
-            <th class="text-left">投票済人数</th>
+            <th class="text-left">投票済ユーザー数／全ユーザー数</th>
             <!-- <th class="text-left"></th>
             <th class="text-left"></th>
             <th class="text-left"></th> -->
@@ -66,12 +66,17 @@
             </td> -->
             <td class="btns">
               <div class="btns__wrapper">
-                <v-btn :to="{ path: '/vote', query: { room_id: room.id } }"
+                <v-btn
+                  :to="{ path: '/vote', query: { room_id: room.id } }"
+                  :disabled="room.status.value === 'end' ? true : false"
                   >投票する
                 </v-btn>
+                <EndRoom :roomStatus="room.status.value" :roomId="room.id" />
                 <!-- <v-btn>投票を締め切る</v-btn> -->
-                <v-btn>投票結果を見る</v-btn>
-                <DeleteRoom :roomId="room.id" />
+                <v-btn :disabled="room.status.value !== 'end' ? true : false"
+                  >投票結果を見る</v-btn
+                >
+                <DeleteRoom :roomStatus="room.status.value" :roomId="room.id" />
               </div>
             </td>
           </tr>
@@ -104,12 +109,14 @@
 import firebase from "@/firebase/firebase";
 import CreateRoom from "@/components/Dialogs/CreateRoom.vue";
 import DeleteRoom from "../components/Dialogs/DeleteRoom.vue";
+import EndRoom from "../components/Dialogs/EndRoom.vue";
 
 export default {
   name: "HomeView",
   components: {
     CreateRoom,
     DeleteRoom,
+    EndRoom,
   },
   data: () => ({
     rooms: [],
@@ -196,7 +203,7 @@ export default {
 
       &.accepting {
         color: green;
-        //   font-weight: bold;
+        font-weight: bold;
       }
 
       .v-btn {
