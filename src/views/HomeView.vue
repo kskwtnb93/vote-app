@@ -196,7 +196,7 @@ export default {
 
       &.accepting {
         color: green;
-        font-weight: bold;
+        //   font-weight: bold;
       }
 
       .v-btn {
