@@ -137,6 +137,7 @@ export default {
     confirmDialog: false,
     failedDialog: false,
     answeredUsers: 0,
+    allUsers: 0,
   }),
   async created() {
     // URLのパラメータからルームIDを取得
@@ -166,6 +167,7 @@ export default {
   mounted() {
     this.checkAnsered();
     this.getUsers();
+    this.countAllUsers();
     this.getQuestions();
   },
   methods: {
@@ -204,6 +206,15 @@ export default {
         //   console.log(data);
         this.users.push(data);
       });
+    },
+    async countAllUsers() {
+      // ドキュメント取得
+      // ref = 参照的なニュアンスの意味
+      const usersRef = firebase.firestore().collection("users");
+      const snapshot = await usersRef.get();
+      // console.log("snapshot", snapshot);
+
+      this.allUsers = snapshot.docs.length;
     },
     async getQuestions() {
       this.questions = [];
@@ -299,6 +310,8 @@ export default {
 
           roomRef
             .update({
+              // 最新のユーザー数に念のため更新
+              allUsers: this.allUsers,
               // 配列型のフィールドに追加：firebase.firestore.FieldValue.arrayUnion()
               answered: firebase.firestore.FieldValue.arrayUnion(this.userId),
             })
