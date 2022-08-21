@@ -5,7 +5,7 @@
         <!-- <v-btn color="primary" dark v-bind="attrs" v-on="on"> Open Dialog </v-btn> -->
         <span>投票ルームを新規作成する</span>
 
-        <v-btn color="pink" dark fab x-small v-bind="attrs" v-on="on">
+        <v-btn color="primary" dark fab x-small v-bind="attrs" v-on="on">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </p>
