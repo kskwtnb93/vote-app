@@ -5,7 +5,7 @@
         v-bind="attrs"
         v-on="on"
         :disabled="roomStatus === 'end' ? true : false"
-        >投票を〆切る</v-btn
+        >投票を締め切る</v-btn
       >
     </template>
 

@@ -72,7 +72,6 @@
                   >投票する
                 </v-btn>
                 <EndRoom :roomStatus="room.status.value" :roomId="room.id" />
-                <!-- <v-btn>投票を締め切る</v-btn> -->
                 <v-btn :disabled="room.status.value !== 'end' ? true : false"
                   >投票結果を見る</v-btn
                 >

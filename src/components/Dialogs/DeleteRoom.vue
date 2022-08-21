@@ -1,7 +1,7 @@
 <template>
   <v-dialog v-model="dialog" persistent max-width="360">
     <template v-slot:activator="{ on, attrs }">
-      <v-btn v-bind="attrs" v-on="on">この投票ルームを削除する</v-btn>
+      <v-btn v-bind="attrs" v-on="on">投票ルームを削除する</v-btn>
     </template>
 
     <v-card>
