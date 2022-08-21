@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import VoteView from '../views/VoteView.vue'
+import OpenView from '../views/OpenView.vue'
 import LoginView from '../views/LoginView.vue'
 import SignupView from '../views/SignupView.vue'
 
@@ -18,6 +19,12 @@ const routes = [
     path: '/vote',
     name: 'vote',
     component: VoteView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/open',
+    name: 'open',
+    component: OpenView,
     meta: { requiresAuth: true }
   },
   {
@@ -44,7 +51,7 @@ router.beforeEach((to, from, next) => {
 	if (requiresAuth) {
 		const user = sessionStorage.getItem('user')
 		// JSON.parse(user)でjsonからオブジェクト型に変換
-		console.log('session', JSON.parse(user));
+		// console.log('session', JSON.parse(user));
 
 		if(!user) {
 			if (!user) {
