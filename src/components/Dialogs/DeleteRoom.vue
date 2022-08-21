@@ -52,16 +52,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.add-room {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0 32px;
-  //   margin: 0;
-  box-sizing: border-box;
-
-  .v-btn {
-    margin-left: 0.5rem;
-  }
-}
 </style>
