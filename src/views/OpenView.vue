@@ -31,6 +31,7 @@
             <template v-slot:default>
               <thead>
                 <tr>
+                  <th></th>
                   <th class="text-left" v-for="user in users" :key="user.uid">
                     {{ user.displayName }}
                   </th>
@@ -38,9 +39,11 @@
               </thead>
               <tbody>
                 <tr>
+                  <td></td>
                   <td v-for="user in users" :key="user.uid">1</td>
                 </tr>
                 <tr>
+                  <td>合計</td>
                   <td v-for="user in users" :key="user.uid">1</td>
                 </tr>
               </tbody>
