@@ -41,30 +41,21 @@
           >
             登録する
           </v-btn>
-
-          <!-- <v-btn color="" @click="reset()"> CLEAR </v-btn> -->
-
-          <!-- <v-alert
-            dense
-            outlined
-            type="error"
-            class="error-message"
-            v-if="errorMessage"
-          >
-            {{ errorMessage }}
-          </v-alert> -->
         </v-form>
 
         <v-snackbar
           class="snackbar snackbar--error"
           color="error"
           outlined
-          v-model="errorMessage"
+          v-model="snackbarError"
           top
         >
           <div class="snackbar__wrapper">
             <v-icon class="snackbar__icon" color="red">mdi-check-circle</v-icon>
-            <span class="snackbar__text">{{ errorMessage }}</span>
+            <!-- <span class="snackbar__text">{{ this.errorMessage }}</span> -->
+            <span class="snackbar__text"
+              >ユーザーの新規作成に失敗しました。</span
+            >
           </div>
 
           <template v-slot:action="{ attrs }">
@@ -73,7 +64,7 @@
               text
               v-bind="attrs"
               class="snackbar__btn"
-              @click="errorMessage = false"
+              @click="snackbarError = false"
             >
               閉じる
             </v-btn>
@@ -107,13 +98,13 @@ export default {
         (v && v.length >= 6) ||
         "パスワードは半角英数字6文字以上で入力してください。",
     ],
-    errorMessage: "",
+    //  errorMessage: "ユーザーの新規作成に失敗しました。",
     snackbarError: false,
   }),
   computed: {
     isValid() {
-      console.log("isValid", this.valid);
-      console.log(this.name);
+      // console.log("isValid", this.valid);
+      // console.log(this.name);
       // console.log(this.nameRules);
 
       if (this.name != null && this.email != null && this.password != null) {
@@ -123,6 +114,7 @@ export default {
       }
     },
   },
+  mounted() {},
   methods: {
     validate() {
       this.$refs.form.validate();
@@ -165,8 +157,9 @@ export default {
         })
         .catch((error) => {
           console.log("fail", error);
+
           // エラーメッセージを表示
-          this.errorMessage = "ユーザーの新規作成に失敗しました。";
+          this.snackbarError = true;
         });
     },
   },
