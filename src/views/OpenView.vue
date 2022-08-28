@@ -20,36 +20,31 @@
     <div v-if="!this.loading">
       <h2 class="page-title">{{ room.name }} 開票</h2>
 
-      <div v-if="this.answered">
-        <p>この回は投票済みです。</p>
-      </div>
+      <p @click="createOpenVotes()">test</p>
 
-      <div v-if="!this.answered && !this.loading">
-        <div v-for="question in questions" :key="question.id">
-          <v-title>{{ question.title }}</v-title>
-          <v-simple-table class="room-list">
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th></th>
-                  <th class="text-left" v-for="user in users" :key="user.uid">
-                    {{ user.displayName }}
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td></td>
-                  <td v-for="user in users" :key="user.uid">1</td>
-                </tr>
-                <tr>
+      <div class="page-contents" v-if="!this.answered && !this.loading">
+        <v-simple-table class="room-list">
+          <template v-slot:default>
+            <thead>
+              <tr>
+                <th></th>
+                <th v-for="user in users" :key="user.uid">
+                  {{ user.displayName }}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="question in questions" :key="question.id">
+                <td>{{ question.title }}</td>
+                <td v-for="user in users" :key="user.uid">1</td>
+              </tr>
+              <!-- <tr>
                   <td>合計</td>
                   <td v-for="user in users" :key="user.uid">1</td>
-                </tr>
-              </tbody>
-            </template>
-          </v-simple-table>
-        </div>
+                </tr> -->
+            </tbody>
+          </template>
+        </v-simple-table>
       </div>
     </div>
   </div>
@@ -62,20 +57,14 @@ export default {
   name: "OpenView",
   components: {},
   data: () => ({
-    questions: [],
-    users: [],
-    room: "",
-    roomId: "",
-    answer: {},
-    confirmData: {},
-    userId: "",
     answered: false,
     loading: true,
-    submitDisable: true,
-    confirmDialog: false,
-    failedDialog: false,
-    answeredUsers: 0,
-    allUsers: 0,
+    room: "",
+    roomId: "",
+    votes: [],
+    questions: [],
+    users: [],
+    userId: "",
   }),
   async created() {
     // URLのパラメータからルームIDを取得
@@ -84,6 +73,7 @@ export default {
     // コレクション：room を参照、さらにdoc()でルームIDを指定
     const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
     const roomDoc = await roomRef.get();
+    this.room = roomDoc.data();
 
     // ルームIDが存在しない場合のリダイレクト処理
     //  if (!roomDoc.exists) {
@@ -98,7 +88,6 @@ export default {
     //      this.$router.push("/");
     //    }, 5000);
     //  }
-    this.room = roomDoc.data();
 
     // 投票締め切り後にアクセスしてきた場合のリダイレクト処理
     //  if (this.room.status.value === "end") {
@@ -114,34 +103,94 @@ export default {
     //    }, 5000);
     //  }
 
+    // 投票データ参照
+    const votesRef = roomRef.collection("votes");
+    const votesSnapshot = await votesRef.get();
+    // ユーザーデータ参照
+    const usersRef = firebase.firestore().collection("users");
+    const userSnapshot = await usersRef.get();
+    // 項目データ参照
+    const questionsRef = firebase.firestore().collection("questions");
+    const questionsSnapshot = await questionsRef.get();
+
+    // 投票データを取得
+    votesSnapshot.docs.map((doc) => {
+      const data = { ...doc.data() };
+      this.votes.push(data);
+    });
+
+    // ユーザーデータを取得
+    userSnapshot.docs.map((doc) => {
+      const data = { ...doc.data() };
+      this.users.push(data);
+    });
+
+    // 項目データ取得
+    questionsSnapshot.docs.map((doc) => {
+      const data = { ...doc.data() };
+      this.questions.push(data);
+    });
+
+    // 開票データを作成
+    this.users.map((user) => {
+      console.log(user.uid);
+
+      this.questions.map((question) => {
+        console.log(question.uid);
+
+        this.votes.map((vote) => {
+          Object.keys(vote).map((voteItem) => {
+            console.log(voteItem + ":", vote[voteItem]);
+          });
+        });
+
+        //   this.votes.forEach(function (vote) {
+        //     Object.keys(vote).forEach(function (voteItem) {
+        //       console.log(voteItem + ":", vote[voteItem]);
+        //     });
+        //   });
+      });
+    });
+
     // ユーザーのuidを取得
     const user = JSON.parse(sessionStorage.getItem("user"));
     this.userId = user.uid;
+
+    // ローディングを止める
+    setTimeout(() => {
+      this.loading = false;
+    }, 500);
   },
   mounted() {
-    //  this.checkAnsered();
-    this.getUsers();
-    //  this.countAllUsers();
-    this.getQuestions();
+    // ユーザーのuidを取得
+    //  this.getMyId();
+    //  this.getUsers();
+    //  this.getQuestions();
+    //  this.createOpenVotes();
   },
   methods: {
-    //  async checkAnsered() {
-    //    // ドキュメント取得
-    //    const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
-    //    const roomDoc = await roomRef.get();
-    //    const roomData = roomDoc.data();
-    //    // sessionStorage からユーザーのuidを取得
-    //    const user = JSON.parse(sessionStorage.getItem("user"));
-    //    // console.log("sessionから", user.uid);
+    async checkAnsered() {
+      // ドキュメント取得
+      const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
+      const roomDoc = await roomRef.get();
+      const roomData = roomDoc.data();
+      // sessionStorage からユーザーのuidを取得
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      // console.log("sessionから", user.uid);
 
-    //    roomData.answered.map((answeredIds) => {
-    //      //   console.log("firestoreから", answeredIds);
+      roomData.answered.map((answeredIds) => {
+        //   console.log("firestoreから", answeredIds);
 
-    //      if (user.uid === answeredIds) {
-    //        this.answered = true;
-    //      }
-    //    });
-    //  },
+        if (user.uid === answeredIds) {
+          this.answered = true;
+        }
+      });
+    },
+    getMyId() {
+      // ユーザーのuidを取得
+      const user = JSON.parse(sessionStorage.getItem("user"));
+      this.userId = user.uid;
+    },
     async getUsers() {
       this.users = [];
 
@@ -161,15 +210,6 @@ export default {
         this.users.push(data);
       });
     },
-    //  async countAllUsers() {
-    //    // ドキュメント取得
-    //    // ref = 参照的なニュアンスの意味
-    //    const usersRef = firebase.firestore().collection("users");
-    //    const snapshot = await usersRef.get();
-    //    // console.log("snapshot", snapshot);
-
-    //    this.allUsers = snapshot.docs.length;
-    //  },
     async getQuestions() {
       this.questions = [];
 
@@ -188,111 +228,13 @@ export default {
         //   console.log(data);
         this.questions.push(data);
 
-        console.log(this.questions);
-
-        // ローディングしている感出すため0.5秒後 this.loading 更新
-        setTimeout(() => {
-          this.loading = false;
-        }, 500);
+        //   console.log(this.questions);
       });
-    },
-    formValidation() {
-      let answerItemCount =
-        document.voteForm.querySelectorAll(".form__item").length;
-      let answeredCount = document.voteForm.querySelectorAll(":checked").length;
 
-      // console.log("回答項目数", answerItemCount);
-      // console.log("回答済み数", answeredCount);
-
-      if (answerItemCount <= answeredCount + 1) {
-        //   console.log("送信可能");
-        this.submitDisable = false;
-      } else {
-        this.submitDisable = true;
-      }
-    },
-    startConfirm() {
-      const form = document.getElementById("form");
-      // #form 内の値を取得
-      const formData = new FormData(form);
-
-      this.answer = {};
-      // オブジェクト作成
-      for (let value of formData.entries()) {
-        this.answer[value[0]] = value[1];
-      }
-      // 回答日情報を追加
-      this.answer.createdAt = new Date();
-      // console.log(this.answer);
-    },
-    createConfirmData() {
-      // console.log(this.answer);
-
-      for (let value of Object.entries(this.answer)) {
-        let questionTitle = "";
-        let userName = "";
-
-        this.questions.forEach(function (question) {
-          if (question.uid === value[0]) {
-            questionTitle = question.title;
-          }
-        });
-
-        this.users.forEach(function (user) {
-          if (user.uid === value[1]) {
-            userName = user.displayName;
-          }
-        });
-
-        if (questionTitle != "" && userName != "") {
-          this.confirmData[questionTitle] = userName;
-        }
-      }
-
-      // console.log(this.confirmData);
-      this.confirmDialog = true;
-    },
-    sendVotes() {
-      // firestore の参照元
-      const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
-      const votesRef = roomRef.collection("votes");
-      // const answeredRef = roomRef.collection("answered");
-
-      // firestore へフォーム入力値を送信
-      votesRef
-        .add(this.answer)
-        .then((result) => {
-          console.log("success to create answer", result);
-
-          roomRef
-            .update({
-              // 最新のユーザー数に念のため更新
-              allUsers: this.allUsers,
-              // 配列型のフィールドに追加：firebase.firestore.FieldValue.arrayUnion()
-              answered: firebase.firestore.FieldValue.arrayUnion(this.userId),
-            })
-            .then((result) => {
-              console.log("success to create answered", result);
-
-              // TOPへリダイレクト
-              this.$router.push("/");
-            })
-            .catch((error) => {
-              console.log("fail to create answered", error);
-            });
-
-          //  answeredRef
-          //    .add({ uid: this.userId })
-          //    .then((result) => {
-          //      console.log("success to create answered", result);
-          //    })
-          //    .catch((error) => {
-          //      console.log("fail to create answered", error);
-          //    });
-        })
-        .catch((error) => {
-          console.log("fail to create answer", error);
-        });
+      // ローディングしている感出すため0.5秒後 this.loading 更新
+      setTimeout(() => {
+        this.loading = false;
+      }, 500);
     },
   },
 };
@@ -300,9 +242,9 @@ export default {
 
 <style lang="scss" scoped>
 .open {
-  max-width: 750px;
+  //   max-width: 750px;
   height: 100%;
-  margin: 0 auto;
+  //   margin: 0 auto;
 }
 .loading-wrapper {
   display: flex;
@@ -314,5 +256,19 @@ export default {
 .page-title {
   padding: 1.5em 12px;
   text-align: left;
+}
+.page-sub-title {
+  text-align: left;
+}
+</style>
+
+<style scoped>
+.v-data-table >>> table {
+  width: auto !important;
+}
+.v-data-table >>> td,
+.v-data-table >>> th {
+  padding: 12px !important;
+  text-align: center !important;
 }
 </style>
