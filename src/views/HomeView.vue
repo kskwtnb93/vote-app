@@ -185,11 +185,12 @@ export default {
 }
 
 .v-data-table {
-  border-bottom: thin solid rgba(0, 0, 0, 0.12);
+  //   border-bottom: thin solid rgba(0, 0, 0, 0.12);
   margin-bottom: 6em;
 
   table {
     table-layout: fixed;
+    margin: 0 auto;
 
     tr {
       &:hover {
