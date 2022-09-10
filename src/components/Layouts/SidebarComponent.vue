@@ -39,6 +39,16 @@
             <v-list-item-title>{{ text }}</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item @click="logout()">
+          <v-list-item-icon>
+            <v-icon>mdi-login</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>ログアウト</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list-item-group>
     </v-list>
   </div>
@@ -52,8 +62,8 @@ export default {
     selectedItem: 0,
     links: [
       ["mdi-format-list-bulleted", "投票ルーム一覧", "/"],
-      ["mdi-login", "Login", "/login"],
-      ["mdi-logout", "Signup", "/signup"],
+      // ["mdi-login", "Login", "/login"],
+      // ["mdi-logout", "Signup", "/signup"],
     ],
     auth: null,
     //  dialog: false,
@@ -72,6 +82,21 @@ export default {
         return user;
       });
     },
+    logout() {
+      console.log("logout");
+      firebase
+        .auth()
+        .signOut()
+        .then(() => {
+          sessionStorage.removeItem("user");
+          localStorage.message = "ログアウトしました。";
+          this.$router.push("/login");
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    },
+
     //  async createRoom() {
     //    const roomRef = firebase.firestore().collection("rooms");
 

@@ -4,30 +4,6 @@
 
     <CreateRoom />
 
-    <!-- <v-list class="list" subheader>
-      <v-list-item class="list__item" v-for="room in rooms" :key="room.uid">
-        <router-link
-          class="list__item__link"
-          :to="{ path: '/vote', query: { room_id: room.id } }"
-        >
-          <v-list-item-avatar>
-            <v-img
-              :alt="`${room.displayName} avatar`"
-              src="https://cdn.vuetifyjs.com/images/lists/2.jpg"
-            ></v-img>
-          </v-list-item-avatar>
-
-          <v-list-item-content>
-            <v-list-item-title v-text="room.name"></v-list-item-title>
-          </v-list-item-content>
-
-          <v-list-item-icon>
-            <v-icon> mdi-message-outline </v-icon>
-          </v-list-item-icon>
-        </router-link>
-      </v-list-item>
-    </v-list> -->
-
     <v-simple-table class="room-list">
       <template v-slot:default>
         <thead>
@@ -35,35 +11,17 @@
             <th class="text-left">ルーム名</th>
             <th class="text-left">投票状況</th>
             <th class="text-left">投票済ユーザー数／全ユーザー数</th>
-            <!-- <th class="text-left"></th>
-            <th class="text-left"></th>
-            <th class="text-left"></th> -->
             <th class="text-left"></th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="room in rooms" :key="room.uid">
-            <td>
-              <!-- <router-link :to="{ path: '/vote', query: { room_id: room.id } }">
-                {{ room.name }}
-              </router-link> -->
-              {{ room.name }}
-            </td>
-            <!-- <td>受付中／締め切り／開票済</td> -->
+            <td>{{ room.name }}</td>
             <td :class="room.status.value">{{ room.status.title }}</td>
             <td>
               {{ room.answered.length }}
               ／{{ room.allUsers > 0 ? room.allUsers : 0 }}
             </td>
-            <!-- <td>
-              <v-btn>投票する</v-btn>
-            </td>
-            <td>
-              <v-btn>投票を〆切る</v-btn>
-            </td>
-            <td>
-              <v-btn>投票結果を見る</v-btn>
-            </td> -->
             <td class="btns">
               <div class="btns__wrapper">
                 <v-btn
@@ -84,25 +42,6 @@
         </tbody>
       </template>
     </v-simple-table>
-
-    <!-- <v-list class="list" subheader>
-      <v-list-item class="list__item" v-for="user in users" :key="user.uid">
-        <v-list-item-avatar>
-          <v-img
-            :alt="`${user.displayName} avatar`"
-            src="https://cdn.vuetifyjs.com/images/lists/2.jpg"
-          ></v-img>
-        </v-list-item-avatar>
-
-        <v-list-item-content>
-          <v-list-item-title v-text="user.displayName"></v-list-item-title>
-        </v-list-item-content>
-
-        <v-list-item-icon>
-          <v-icon> mdi-message-outline </v-icon>
-        </v-list-item-icon>
-      </v-list-item>
-    </v-list> -->
   </div>
 </template>
 

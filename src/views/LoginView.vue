@@ -190,7 +190,7 @@ export default {
             photoURL: result.user.photoURL,
           };
 
-          // sessionに保存するにはstring型にしないといけないのでJSON.stringfyで、文字列型のJSONに変換
+          // sessionに保存するためにJSON.stringfyでJSONに変換
           sessionStorage.setItem("user", JSON.stringify(auth));
 
           // TOPページにリダイレクトする処理
