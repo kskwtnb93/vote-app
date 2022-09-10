@@ -8,19 +8,8 @@
       ></v-progress-circular>
     </div>
 
-    <!-- <v-dialog v-model="failedDialog" persistent max-width="360">
-      <v-card>
-        <v-card-title class="text-h5"></v-card-title>
-        <v-card-text>
-          投票が〆切られたか、投票ルームが削除されたため投票できません。<br />５秒後に一覧ページに移動します。
-        </v-card-text>
-      </v-card>
-    </v-dialog> -->
-
     <div v-if="!this.loading">
       <h2 class="page-title">{{ room.name }} 開票</h2>
-
-      <!-- <p @click="createOpenVotes()">test</p> -->
 
       <div class="page-contents" v-if="!this.answered && !this.loading">
         <v-simple-table class="total-table">
@@ -51,11 +40,18 @@
                 </td>
               </tr>
               <tr class="total-row">
-                <th>A total</th>
+                <th>A 合計</th>
                 <td v-for="user in users" :key="user.uid">
-                  <span v-for="(value, key, index) in aTotal" :key="index">
-                    <span v-if="user.uid === key">{{ value.value }}</span>
-                  </span>
+                  <template v-for="(value, key, index) in allTotal">
+                    <span v-if="user.uid === key" class="wrapper" :key="index">
+                      <span class="value">{{ value.value }}</span>
+                      <span
+                        v-if="value.rank != 'normal'"
+                        class="rank-mark"
+                        :class="value.rank"
+                      ></span>
+                    </span>
+                  </template>
                 </td>
               </tr>
 
@@ -76,11 +72,18 @@
                 </td>
               </tr>
               <tr class="total-row">
-                <th>B total</th>
+                <th>B 合計</th>
                 <td v-for="user in users" :key="user.uid">
-                  <span v-for="(value, key, index) in bTotal" :key="index">
-                    <span v-if="user.uid === key">{{ value.value }}</span>
-                  </span>
+                  <template v-for="(value, key, index) in allTotal">
+                    <span v-if="user.uid === key" class="wrapper" :key="index">
+                      <span class="value">{{ value.value }}</span>
+                      <span
+                        v-if="value.rank != 'normal'"
+                        class="rank-mark"
+                        :class="value.rank"
+                      ></span>
+                    </span>
+                  </template>
                 </td>
               </tr>
 
@@ -101,20 +104,34 @@
                 </td>
               </tr>
               <tr class="total-row">
-                <th>C total</th>
+                <th>C 合計</th>
                 <td v-for="user in users" :key="user.uid">
-                  <span v-for="(value, key, index) in cTotal" :key="index">
-                    <span v-if="user.uid === key">{{ value.value }}</span>
-                  </span>
+                  <template v-for="(value, key, index) in allTotal">
+                    <span v-if="user.uid === key" class="wrapper" :key="index">
+                      <span class="value">{{ value.value }}</span>
+                      <span
+                        v-if="value.rank != 'normal'"
+                        class="rank-mark"
+                        :class="value.rank"
+                      ></span>
+                    </span>
+                  </template>
                 </td>
               </tr>
 
               <tr class="total-row all-total-row" ref="first_child">
                 <th>総 合</th>
                 <td v-for="user in users" :key="user.uid">
-                  <span v-for="(value, key, index) in allTotal" :key="index">
-                    <span v-if="user.uid === key">{{ value.value }}</span>
-                  </span>
+                  <template v-for="(value, key, index) in allTotal">
+                    <span v-if="user.uid === key" class="wrapper" :key="index">
+                      <span class="value">{{ value.value }}</span>
+                      <span
+                        v-if="value.rank != 'normal'"
+                        class="rank-mark"
+                        :class="value.rank"
+                      ></span>
+                    </span>
+                  </template>
                 </td>
               </tr>
             </tbody>
@@ -161,34 +178,6 @@ export default {
     const roomDoc = await roomRef.get();
     this.room = roomDoc.data();
 
-    // ルームIDが存在しない場合のリダイレクト処理
-    //  if (!roomDoc.exists) {
-    //    // ローディング演出を中止
-    //    this.loading = false;
-
-    //    // ダイアログを表示
-    //    this.failedDialog = true;
-
-    //    // ５秒後にリダイレクト実行
-    //    await setTimeout(() => {
-    //      this.$router.push("/");
-    //    }, 5000);
-    //  }
-
-    // 投票締め切り後にアクセスしてきた場合のリダイレクト処理
-    //  if (this.room.status.value === "end") {
-    //    // ローディング演出を中止
-    //    this.loading = false;
-
-    //    // ダイアログを表示
-    //    this.failedDialog = true;
-
-    //    // ５秒後にリダイレクト実行
-    //    await setTimeout(() => {
-    //      this.$router.push("/");
-    //    }, 5000);
-    //  }
-
     // 投票データ参照
     const votesRef = roomRef.collection("votes");
     const votesSnapshot = await votesRef.get();
@@ -217,7 +206,7 @@ export default {
       this.questions.push(data);
     });
 
-    // 開票データを作成
+    // 集計データを作成
     //  this.users.map((user) => {
     //    this.aggregatedDatas[user.displayName] = [];
 
@@ -335,16 +324,43 @@ export default {
     }, {});
     //  console.log("allTotal", this.allTotal);
 
-    //  const addRank = (dataObject) => {
-    //  };
+    const addRank = (targetObject) => {
+      let array = Object.entries(targetObject);
+      let no1MemberUids = [];
+      let no1Value = 0;
+      let no2MemberUids = [];
+      let no2Value = 0;
 
-    let arr = Object.entries(this.allTotal);
+      // ポイント１位を決める
+      array.map((value) => {
+        if (value[1].value >= no1Value) {
+          no1MemberUids.push(value[0]);
+          no1Value = value[1].value;
+        }
+      });
+      no1MemberUids.map((value) => {
+        this.allTotal[value].rank = "no1";
+      });
 
-    //  const obj = Object.fromEntries(arr);
+      // ポイント２位を決める
+      array.map((value) => {
+        if (value[1].value < no1Value) {
+          if (value[1].value >= no2Value) {
+            no2MemberUids.push(value[0]);
+            no2Value = value[1].value;
+          }
+        }
+      });
+      no2MemberUids.map((value) => {
+        this.allTotal[value].rank = "no2";
+      });
+    };
 
-    //  addRank(this.allTotal);
-
-    console.log(arr);
+    addRank(this.aTotal);
+    addRank(this.bTotal);
+    addRank(this.cTotal);
+    addRank(this.allTotal);
+    //  console.log(this.allTotal);
 
     // ユーザーのuidを取得
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -355,89 +371,8 @@ export default {
       this.loading = false;
     }, 100);
   },
-  mounted() {
-    // ユーザーのuidを取得
-    //  this.getMyId();
-    //  this.getUsers();
-    //  this.getQuestions();
-    //  this.createOpenVotes();
-    //  const targetElement = this.$refs.first_child;
-    //  console.log(targetElement);
-    //  targetElement.style.backgroundColor = "blue";
-  },
-  methods: {
-    async checkAnsered() {
-      // ドキュメント取得
-      const roomRef = firebase.firestore().collection("rooms").doc(this.roomId);
-      const roomDoc = await roomRef.get();
-      const roomData = roomDoc.data();
-      // sessionStorage からユーザーのuidを取得
-      const user = JSON.parse(sessionStorage.getItem("user"));
-      // console.log("sessionから", user.uid);
-
-      roomData.answered.map((answeredIds) => {
-        //   console.log("firestoreから", answeredIds);
-
-        if (user.uid === answeredIds) {
-          this.answered = true;
-        }
-      });
-    },
-    getMyId() {
-      // ユーザーのuidを取得
-      const user = JSON.parse(sessionStorage.getItem("user"));
-      this.userId = user.uid;
-    },
-    async getUsers() {
-      this.users = [];
-
-      // ドキュメント取得
-      // ref = 参照的なニュアンスの意味
-      const usersRef = firebase.firestore().collection("users");
-      const snapshot = await usersRef.get();
-      // console.log("snapshot", snapshot);
-
-      snapshot.docs.map((doc) => {
-        // docsであれば配列として受け取れるのでmapを使って展開できる
-        const data = { ...doc.data() };
-        data.id = doc.id;
-
-        // data()メソッド使わないと見れない
-        //   console.log(data);
-        this.users.push(data);
-      });
-    },
-    async getQuestions() {
-      this.questions = [];
-
-      // ドキュメント取得
-      // ref = 参照的なニュアンスの意味
-      const questionsRef = firebase.firestore().collection("questions");
-      const snapshot = await questionsRef.get();
-      // console.log("snapshot", snapshot);
-
-      snapshot.docs.map((doc) => {
-        // docsであれば配列として受け取れるのでmapを使って展開できる
-        const data = { ...doc.data() };
-        data.id = doc.id;
-
-        // data()メソッド使わないと見れない
-        //   console.log(data);
-        this.questions.push(data);
-
-        //   console.log(this.questions);
-      });
-
-      // ローディングしている感出すため0.5秒後 this.loading 更新
-      setTimeout(() => {
-        this.loading = false;
-      }, 500);
-    },
-    //  markingTopMember() {
-    //    const targetRow = document.querySelectorAll(".total-row");
-    //    console.log(targetRow);
-    //  },
-  },
+  mounted() {},
+  methods: {},
 };
 </script>
 
@@ -483,10 +418,44 @@ export default {
 }
 .v-data-table >>> .total-row td,
 .v-data-table >>> .total-row th {
+  position: relative;
   font-weight: bold;
   border-top: medium solid rgba(0, 0, 0, 0.12);
   border-bottom: medium solid rgba(0, 0, 0, 0.12) !important;
   /* background-color: rgba(0, 0, 0, 0.06); */
+}
+.v-data-table >>> .total-row td .wrapper,
+.v-data-table >>> .total-row th .wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.v-data-table >>> .total-row td .wrapper .value,
+.v-data-table >>> .total-row th .wrapper .value {
+  position: relative;
+  z-index: 2;
+}
+.v-data-table >>> .total-row td .wrapper .rank-mark,
+.v-data-table >>> .total-row th .wrapper .rank-mark {
+  position: absolute;
+  width: 1.6em;
+  height: 1.6em;
+  border-radius: 50%;
+}
+.v-data-table >>> .total-row td .wrapper .rank-mark.no1,
+.v-data-table >>> .total-row th .wrapper .rank-mark.no1 {
+  background-color: rgba(255, 255, 0, 0.8);
+  width: 2.4em;
+  height: 2.4em;
+}
+.v-data-table >>> .total-row td .wrapper .rank-mark.no2,
+.v-data-table >>> .total-row th .wrapper .rank-mark.no2 {
+  background-color: rgba(255, 255, 0, 0.4);
 }
 .v-data-table >>> .all-total-row td,
 .v-data-table >>> .all-total-row th {
