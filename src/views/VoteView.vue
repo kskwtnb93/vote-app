@@ -40,6 +40,7 @@
             fluid
           >
             <label class="form__item__title">{{ question.title }}</label>
+            <p class="form__item__description">{{ question.description }}</p>
             <v-radio-group>
               <v-radio
                 v-for="user in users"
@@ -385,6 +386,19 @@ export default {
     &__title {
       display: block;
       text-align: left;
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin-bottom: 16px;
+    }
+
+    &__description {
+      display: block;
+      text-align: left;
+      margin-bottom: 28px;
+    }
+
+    .v-radio:not(:last-child) {
+      margin-bottom: 16px;
     }
   }
 
