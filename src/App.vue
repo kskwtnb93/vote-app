@@ -30,7 +30,7 @@ export default {
   },
   mounted() {},
   data: () => ({
-    drawer: null,
+    drawer: false,
     showSidebar: true,
   }),
   beforeUpdate() {

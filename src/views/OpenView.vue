@@ -23,7 +23,7 @@
       <!-- <p @click="createOpenVotes()">test</p> -->
 
       <div class="page-contents" v-if="!this.answered && !this.loading">
-        <v-simple-table class="room-list">
+        <v-simple-table class="total-table">
           <template v-slot:default>
             <thead>
               <tr>
@@ -35,96 +35,85 @@
             </thead>
             <tbody>
               <tr>
-                <td>A1</td>
+                <th>A1</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in a1" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
               </tr>
               <tr>
-                <td>A2</td>
+                <th>A2</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in a2" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
               </tr>
               <tr class="total-row">
-                <td>A 合計</td>
+                <th>A total</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in aTotal" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
               </tr>
-              <tr>
-                <td></td>
-                <td v-for="user in users" :key="user.uid"></td>
-              </tr>
 
               <tr>
-                <td>B1</td>
+                <th>B1</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in b1" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
               </tr>
               <tr>
-                <td>B2</td>
+                <th>B2</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in b2" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
               </tr>
               <tr class="total-row">
-                <td>B 合計</td>
+                <th>B total</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in bTotal" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
-              </tr>
-              <tr>
-                <td></td>
-                <td v-for="user in users" :key="user.uid"></td>
               </tr>
 
               <tr>
-                <td>C1</td>
+                <th>C1</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in c1" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
               </tr>
               <tr>
-                <td>C2</td>
+                <th>C2</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in c2" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
               </tr>
               <tr class="total-row">
-                <td>C 合計</td>
+                <th>C total</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in cTotal" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
               </tr>
-              <tr>
-                <td></td>
-                <td v-for="user in users" :key="user.uid"></td>
-              </tr>
-              <tr class="total-row all-total-row">
-                <td>総合</td>
+
+              <tr class="total-row all-total-row" ref="first_child">
+                <th>総 合</th>
                 <td v-for="user in users" :key="user.uid">
                   <span v-for="(value, key, index) in allTotal" :key="index">
-                    <span v-if="user.uid === key">{{ value }}</span>
+                    <span v-if="user.uid === key">{{ value.value }}</span>
                   </span>
                 </td>
               </tr>
@@ -259,21 +248,21 @@ export default {
     const aggregateVotes = (questionName, questionData) => {
       this.questions.map(() => {
         this.users.map((user) => {
-          questionData[user.uid] = 0;
+          questionData[user.uid] = { value: 0, rank: "normal" };
 
           this.votes.map((vote) => {
-            let count = questionData[user.uid];
+            let count = questionData[user.uid].value;
 
             Object.keys(vote).map((voteItem) => {
               if (voteItem === questionName) {
                 if (vote[voteItem] === user.uid) {
                   // A1, B1, C1
                   if (questionName.indexOf("2") != -1) {
-                    questionData[user.uid] = count + 1;
+                    questionData[user.uid].value = count + 1;
                   }
                   // A2, B2, C2
                   if (questionName.indexOf("1") != -1) {
-                    questionData[user.uid] = count + 2;
+                    questionData[user.uid].value = count + 2;
                   }
                 }
               }
@@ -301,31 +290,61 @@ export default {
 
     // A票合計データ作成
     this.aTotal = Object.keys(this.a1).reduce((sum, value) => {
-      sum[value] = this.a1[value] + this.a2[value];
+      sum[value] = {
+        value: 0,
+        rank: "normal",
+      };
+      sum[value].value = this.a1[value].value + this.a2[value].value;
       return sum;
     }, {});
-    console.log("aTotal", this.aTotal);
+    //  console.log("aTotal", this.aTotal);
 
     // B票合計データ作成
     this.bTotal = Object.keys(this.b1).reduce((sum, value) => {
-      sum[value] = this.b1[value] + this.b2[value];
+      sum[value] = {
+        value: 0,
+        rank: "normal",
+      };
+      sum[value].value = this.b1[value].value + this.b2[value].value;
       return sum;
     }, {});
-    console.log("bTotal", this.bTotal);
+    //  console.log("bTotal", this.bTotal);
 
     // C票合計データ作成
     this.cTotal = Object.keys(this.c1).reduce((sum, value) => {
-      sum[value] = this.c1[value] + this.c2[value];
+      sum[value] = {
+        value: 0,
+        rank: "normal",
+      };
+      sum[value].value = this.c1[value].value + this.c2[value].value;
       return sum;
     }, {});
-    console.log("cTotal", this.cTotal);
+    //  console.log("cTotal", this.cTotal);
 
-    // 総合データ作成
+    // 総合合計データ作成
     this.allTotal = Object.keys(this.aTotal).reduce((sum, value) => {
-      sum[value] = this.aTotal[value] + this.bTotal[value] + this.cTotal[value];
+      sum[value] = {
+        value: 0,
+        rank: "normal",
+      };
+      sum[value].value =
+        this.aTotal[value].value +
+        this.bTotal[value].value +
+        this.cTotal[value].value;
       return sum;
     }, {});
-    console.log("allTotal", this.allTotal);
+    //  console.log("allTotal", this.allTotal);
+
+    //  const addRank = (dataObject) => {
+    //  };
+
+    let arr = Object.entries(this.allTotal);
+
+    //  const obj = Object.fromEntries(arr);
+
+    //  addRank(this.allTotal);
+
+    console.log(arr);
 
     // ユーザーのuidを取得
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -342,6 +361,9 @@ export default {
     //  this.getUsers();
     //  this.getQuestions();
     //  this.createOpenVotes();
+    //  const targetElement = this.$refs.first_child;
+    //  console.log(targetElement);
+    //  targetElement.style.backgroundColor = "blue";
   },
   methods: {
     async checkAnsered() {
@@ -411,6 +433,10 @@ export default {
         this.loading = false;
       }, 500);
     },
+    //  markingTopMember() {
+    //    const targetRow = document.querySelectorAll(".total-row");
+    //    console.log(targetRow);
+    //  },
   },
 };
 </script>
@@ -448,14 +474,30 @@ export default {
   padding: 12px !important;
   text-align: center !important;
 }
+.v-data-table >>> thead th:first-child,
+.v-data-table >>> tbody th {
+  min-width: 80px;
+}
+.v-data-table >>> tbody th {
+  background-color: rgba(0, 0, 0, 0.03);
+}
 .v-data-table >>> .total-row td,
 .v-data-table >>> .total-row th {
   font-weight: bold;
   border-top: medium solid rgba(0, 0, 0, 0.12);
-  border-bottom: medium solid rgba(0, 0, 0, 0) !important;
+  border-bottom: medium solid rgba(0, 0, 0, 0.12) !important;
+  /* background-color: rgba(0, 0, 0, 0.06); */
 }
 .v-data-table >>> .all-total-row td,
 .v-data-table >>> .all-total-row th {
-  border-bottom: medium solid rgba(0, 0, 0, 0.12) !important;
+  border-bottom: medium solid rgba(0, 0, 0, 0) !important;
+  /* background-color: rgba(0, 0, 0, 0); */
+  font-size: 1em;
+}
+.total-table {
+  margin-bottom: 3em;
+}
+.all-total-table {
+  margin-bottom: 16em;
 }
 </style>
