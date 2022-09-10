@@ -34,33 +34,7 @@
           >
             ログイン
           </v-btn>
-
-          <!-- <v-btn color="" @click="isClear()"> CLEAR </v-btn> -->
-
-          <!-- <v-alert
-            dense
-            text
-            type="success"
-            v-if="message"
-            class="success-message"
-          >
-            {{ message }}
-          </v-alert> -->
-
-          <!-- <v-alert
-            dense
-            outlined
-            type="error"
-            class="error-message"
-            v-if="errorMessage"
-          >
-            {{ errorMessage }}
-          </v-alert> -->
         </v-form>
-
-        <!-- <div class="text-center ma-2">
-          <v-btn dark @click="snackbar = true"> Open Snackbar </v-btn>
-        </div> -->
 
         <v-snackbar
           class="snackbar snackbar--success"
