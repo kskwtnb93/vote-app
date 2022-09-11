@@ -101,7 +101,7 @@
             </v-card-text>
 
             <v-card-actions class="confirm-dialog__actions">
-              <v-btn color="secondary" @click="dialog = false">
+              <v-btn color="secondary" @click="confirmDialog = false">
                 回答を修正する
               </v-btn>
 
