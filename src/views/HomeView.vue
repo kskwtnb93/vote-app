@@ -19,8 +19,16 @@
             <td>{{ room.name }}</td>
             <td :class="room.status.value">{{ room.status.title }}</td>
             <td>
-              {{ room.answered.length }}
-              ／{{ room.allUsers > 0 ? room.allUsers : 0 }}
+              <div class="all-users">
+                <span class="all-users__text">
+                  {{ room.answered.length }} ／{{
+                    room.allUsers > 0 ? room.allUsers : 0
+                  }}
+                </span>
+                <button class="all-users__icon" @click="getRooms">
+                  <v-icon>mdi-reload</v-icon>
+                </button>
+              </div>
             </td>
             <td class="btns">
               <div class="btns__wrapper">
@@ -189,6 +197,15 @@ export default {
         width: max-content;
         .btns__wrapper {
           margin-bottom: -0.5rem;
+        }
+      }
+
+      .all-users {
+        display: flex;
+        align-items: center;
+
+        &__icon {
+          margin-left: 0.5em;
         }
       }
     }
