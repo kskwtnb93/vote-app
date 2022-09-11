@@ -42,6 +42,31 @@
         </tbody>
       </template>
     </v-simple-table>
+
+    <v-snackbar
+      class="snackbar snackbar--success"
+      color="success"
+      outlined
+      v-model="snackbarSuccess"
+      top
+    >
+      <div class="snackbar__wrapper">
+        <v-icon class="snackbar__icon" color="green">mdi-check-circle</v-icon>
+        <span class="snackbar__text">{{ successMessage }}</span>
+      </div>
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          color="green"
+          text
+          v-bind="attrs"
+          class="snackbar__btn"
+          @click="snackbarSuccess = false"
+        >
+          閉じる
+        </v-btn>
+      </template>
+    </v-snackbar>
   </div>
 </template>
 
@@ -60,9 +85,17 @@ export default {
   },
   data: () => ({
     rooms: [],
+    successMessage: "",
+    snackbarSuccess: false,
   }),
   mounted() {
     this.getRooms();
+
+    if (localStorage.message) {
+      this.successMessage = localStorage.message;
+      localStorage.message = "";
+      this.snackbarSuccess = true;
+    }
 
     //  エラーになるため不使用：firestore、参照したいデータ１階層目だと onSnapshot() 使用できない？
     //  解決できなかったのでルーム追加のリアルタイム反映を強制リロードで擬似的に実現

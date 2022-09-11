@@ -153,6 +153,7 @@ export default {
         .then((result) => {
           console.log("success");
           console.log("user", result.user);
+          localStorage.message = "ログインに成功しました。";
 
           // session は localstoraage と違い、ブラウザを閉じるとリセットされる
 
@@ -195,6 +196,9 @@ export default {
 .login-btn {
   //   margin-right: 20px;
 }
+</style>
+
+<style>
 .success-message {
   margin-top: 20px;
 }
