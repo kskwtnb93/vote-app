@@ -1,5 +1,5 @@
 <template>
-  <div class="open">
+  <div id="particles" class="open">
     <div class="loading-wrapper" v-if="this.loading">
       <v-progress-circular
         :width="3"
@@ -144,6 +144,7 @@
 
 <script>
 import firebase from "@/firebase/firebase";
+import "particles.js";
 
 export default {
   name: "OpenView",
@@ -377,14 +378,113 @@ export default {
     setTimeout(() => {
       this.loading = false;
     }, 10);
+
+    // Particle.js
+    this.initParticles();
+
+    const canvas = document.getElementsByClassName("particles-js-canvas-el")[0];
+
+    setTimeout(() => {
+      canvas.classList.add("is-hidden");
+    }, 5000);
+
+    setTimeout(() => {
+      canvas.remove();
+    }, 10000);
   },
   mounted() {},
-  methods: {},
+  methods: {
+    initParticles() {
+      window.particlesJS("particles", {
+        particles: {
+          number: {
+            value: 50, //紙吹雪の数
+            density: {
+              enable: false,
+              value_area: 200,
+            },
+          },
+          color: {
+            value: [
+              "#EA5532",
+              "#F6AD3C",
+              "#FFF33F",
+              "#00A95F",
+              "#00ADA9",
+              "#00AFEC",
+              "#4D4398",
+              "#E85298",
+            ], //紙吹雪の色の種類
+          },
+          shape: {
+            type: "polygon", //形状はPolygon,つまり多角形
+            stroke: {
+              width: 0,
+            },
+            polygon: {
+              nb_sides: 4, //多角形の角の数
+            },
+          },
+          opacity: {
+            value: 1,
+            random: false,
+            anim: {
+              enable: true,
+              speed: 20,
+              opacity_min: 0,
+              sync: false,
+            },
+          },
+          size: {
+            value: 5,
+            random: true, //サイズをランダムにする
+            anim: {
+              enable: true,
+              speed: 1,
+              size_min: 1,
+              sync: false,
+            },
+          },
+          line_linked: {
+            enable: false,
+          },
+          move: {
+            enable: true,
+            speed: 4, //小さくするとゆっくり、大きくすると速くなる
+            direction: "bottom", //落ちる向き
+            random: false, //動きをランダムにするか
+            straight: false, //まっすぐ落ちるかどうか
+            out_mode: "out", //画面の外に出るか
+            bounce: false, //跳ね返るかどうか
+            attract: {
+              enable: false,
+              rotateX: 600,
+              rotateY: 1200,
+            },
+          },
+        },
+        interactivity: {
+          detect_on: "canvas",
+          events: {
+            onhover: {
+              enable: false,
+            },
+            onclick: {
+              enable: false,
+            },
+            resize: true,
+          },
+        },
+        retina_detect: true,
+      });
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 .open {
+  position: relative;
   //   max-width: 750px;
   height: 100%;
   //   margin: 0 auto;
@@ -450,15 +550,15 @@ export default {
 .v-data-table >>> .total-row td .wrapper .rank-mark,
 .v-data-table >>> .total-row th .wrapper .rank-mark {
   position: absolute;
-  width: 1.6em;
-  height: 1.6em;
+  width: 2em;
+  height: 2em;
   border-radius: 50%;
 }
 .v-data-table >>> .total-row td .wrapper .rank-mark.no1,
 .v-data-table >>> .total-row th .wrapper .rank-mark.no1 {
   background-color: rgba(255, 255, 0, 0.8);
-  width: 2.4em;
-  height: 2.4em;
+  width: 2.8em;
+  height: 2.8em;
 }
 .v-data-table >>> .total-row td .wrapper .rank-mark.no2,
 .v-data-table >>> .total-row th .wrapper .rank-mark.no2 {
@@ -475,5 +575,26 @@ export default {
 }
 .all-total-table {
   margin-bottom: 16em;
+}
+</style>
+
+<style lang="scss">
+.particles-js-canvas-el {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 3s linear;
+
+  &.is-hidden {
+    opacity: 0;
+  }
+
+  &.is-delete {
+    display: none;
+  }
 }
 </style>
