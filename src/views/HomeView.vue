@@ -206,6 +206,10 @@ export default {
 
         &__icon {
           margin-left: 0.5em;
+
+          i {
+            font-size: 1.5em;
+          }
         }
       }
     }
