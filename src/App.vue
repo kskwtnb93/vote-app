@@ -11,7 +11,7 @@
           v-if="showSidebar"
         ></v-app-bar-nav-icon>
 
-        <v-toolbar-title>投票アプリ</v-toolbar-title>
+        <!-- <v-toolbar-title>投票アプリ</v-toolbar-title> -->
       </v-app-bar>
 
       <v-main>

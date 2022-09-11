@@ -527,8 +527,10 @@ export default {
 .v-data-table >>> .total-row th {
   position: relative;
   font-weight: bold;
-  border-top: medium solid rgba(0, 0, 0, 0.12);
-  border-bottom: medium solid rgba(0, 0, 0, 0.12) !important;
+  /* border-top: medium solid rgba(0, 0, 0, 0.12);
+  border-bottom: medium solid rgba(0, 0, 0, 0.12) !important; */
+  border-top: thin solid rgba(0, 0, 0, 0.12);
+  border-bottom: thin solid rgba(0, 0, 0, 0.12) !important;
   /* background-color: rgba(0, 0, 0, 0.06); */
 }
 .v-data-table >>> .total-row td .wrapper,
