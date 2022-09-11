@@ -42,7 +42,7 @@
               <tr class="total-row">
                 <th>A 合計</th>
                 <td v-for="user in users" :key="user.uid">
-                  <template v-for="(value, key, index) in allTotal">
+                  <template v-for="(value, key, index) in aTotal">
                     <span v-if="user.uid === key" class="wrapper" :key="index">
                       <span class="value">{{ value.value }}</span>
                       <span
@@ -74,7 +74,7 @@
               <tr class="total-row">
                 <th>B 合計</th>
                 <td v-for="user in users" :key="user.uid">
-                  <template v-for="(value, key, index) in allTotal">
+                  <template v-for="(value, key, index) in bTotal">
                     <span v-if="user.uid === key" class="wrapper" :key="index">
                       <span class="value">{{ value.value }}</span>
                       <span
@@ -106,7 +106,7 @@
               <tr class="total-row">
                 <th>C 合計</th>
                 <td v-for="user in users" :key="user.uid">
-                  <template v-for="(value, key, index) in allTotal">
+                  <template v-for="(value, key, index) in cTotal">
                     <span v-if="user.uid === key" class="wrapper" :key="index">
                       <span class="value">{{ value.value }}</span>
                       <span
@@ -249,6 +249,7 @@ export default {
                   if (questionName.indexOf("2") != -1) {
                     questionData[user.uid].value = count + 1;
                   }
+
                   // A2, B2, C2
                   if (questionName.indexOf("1") != -1) {
                     questionData[user.uid].value = count + 2;
@@ -267,8 +268,6 @@ export default {
     aggregateVotes("b2", this.b2);
     aggregateVotes("c1", this.c1);
     aggregateVotes("c2", this.c2);
-
-    //  console.log("aggregatedDatas", this.aggregatedDatas);
 
     //  console.log("A1", this.a1);
     //  console.log("A2", this.a2);
@@ -338,21 +337,30 @@ export default {
           no1Value = value[1].value;
         }
       });
+      array.map((value) => {
+        if (value[1].value === no1Value) {
+          no1MemberUids.push(value[0]);
+        }
+      });
       no1MemberUids.map((value) => {
-        this.allTotal[value].rank = "no1";
+        targetObject[value].rank = "no1";
       });
 
       // ポイント２位を決める
       array.map((value) => {
         if (value[1].value < no1Value) {
           if (value[1].value >= no2Value) {
-            no2MemberUids.push(value[0]);
             no2Value = value[1].value;
           }
         }
       });
+      array.map((value) => {
+        if (value[1].value === no2Value) {
+          no2MemberUids.push(value[0]);
+        }
+      });
       no2MemberUids.map((value) => {
-        this.allTotal[value].rank = "no2";
+        targetObject[value].rank = "no2";
       });
     };
 
@@ -360,7 +368,6 @@ export default {
     addRank(this.bTotal);
     addRank(this.cTotal);
     addRank(this.allTotal);
-    //  console.log(this.allTotal);
 
     // ユーザーのuidを取得
     const user = JSON.parse(sessionStorage.getItem("user"));
@@ -369,7 +376,7 @@ export default {
     // ローディングを止める
     setTimeout(() => {
       this.loading = false;
-    }, 100);
+    }, 10);
   },
   mounted() {},
   methods: {},

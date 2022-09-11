@@ -7,7 +7,7 @@
 
       <v-app-bar app>
         <v-app-bar-nav-icon
-          @click="drawer = !drawer"
+          @click="swichSidebar"
           v-if="showSidebar"
         ></v-app-bar-nav-icon>
 
@@ -28,11 +28,33 @@ export default {
   components: {
     SidebarComponent,
   },
-  mounted() {},
   data: () => ({
     drawer: false,
     showSidebar: true,
   }),
+  created() {
+    //  if (this.$route.path.match(/login$/) || this.$route.path.match(/signup$/)) {
+    //    this.showSidebar = false;
+    //  } else {
+    //    this.showSidebar = true;
+    //  }
+  },
+  mounted() {
+    //  if (this.$route.path.match(/login$/) || this.$route.path.match(/signup$/)) {
+    //    this.showSidebar = false;
+    //  } else {
+    //    this.showSidebar = true;
+    //  }
+    //  console.log(this.showSidebar);
+    //  if (this.$route.name === "open") {
+    //    console.log(this.drawer);
+    //    this.drawer = false;
+    //    console.log(this.drawer);
+    //  }
+    //  console.log(this.$route.name);
+    //  if(this.$route.name === ) {
+    //  }
+  },
   beforeUpdate() {
     if (this.$route.path.match(/login$/) || this.$route.path.match(/signup$/)) {
       this.showSidebar = false;
@@ -40,6 +62,15 @@ export default {
       this.showSidebar = true;
     }
     //  console.log(this.showSidebar);
+    //  if (this.$route.name === "open") {
+    //    this.drawer = !this.drawer;
+    //  }
+  },
+  methods: {
+    swichSidebar() {
+      this.drawer = !this.drawer;
+      console.log(this.drawer);
+    },
   },
 };
 </script>

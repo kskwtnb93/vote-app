@@ -3,8 +3,8 @@
     <v-list>
       <v-list-item class="avatar">
         <v-list-item-avatar class="avatar__pic">
-          <v-avatar color="indigo">
-            <v-icon dark> mdi-account-circle </v-icon>
+          <v-avatar>
+            <v-icon x-large> mdi-account-circle </v-icon>
           </v-avatar>
         </v-list-item-avatar>
       </v-list-item>
@@ -42,7 +42,7 @@
 
         <v-list-item @click="logout()">
           <v-list-item-icon>
-            <v-icon>mdi-login</v-icon>
+            <v-icon>mdi-logout</v-icon>
           </v-list-item-icon>
 
           <v-list-item-content>
@@ -66,12 +66,6 @@ export default {
       // ["mdi-logout", "Signup", "/signup"],
     ],
     auth: null,
-    //  dialog: false,
-    //  name: "",
-    //  date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-    //    .toISOString()
-    //    .substr(0, 10),
-    //  menu1: false,
   }),
   mounted() {
     this.auth = JSON.parse(sessionStorage.getItem("user"));
@@ -96,20 +90,6 @@ export default {
           console.log(error);
         });
     },
-
-    //  async createRoom() {
-    //    const roomRef = firebase.firestore().collection("rooms");
-
-    //    await roomRef
-    //      .add({
-    //        name: this.date,
-    //        createdAt: firebase.firestore.Timestamp.now(),
-    //      })
-    //      .then((result) => {
-    //        console.log("success to create room", result);
-    //        this.dialog = false;
-    //      });
-    //  },
   },
 };
 </script>
@@ -124,8 +104,12 @@ export default {
 }
 
 .v-avatar {
-  width: 40px !important;
-  min-width: 40px !important;
-  height: 40px !important;
+  width: 48px !important;
+  min-width: 48px !important;
+  height: 48px !important;
+}
+
+.v-list-item__content {
+  padding-top: 0;
 }
 </style>
