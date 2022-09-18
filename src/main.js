@@ -8,5 +8,6 @@ Vue.config.productionTip = false
 new Vue({
   vuetify,
   router,
-  render: h => h(App)
+  render: h => h(App),
+  created: () => (document.documentElement.setAttribute('lang', 'ja')),
 }).$mount('#app')
