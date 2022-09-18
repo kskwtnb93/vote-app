@@ -8,12 +8,14 @@
       ></v-progress-circular>
     </div>
 
-    <!-- <div id="particles"></div> -->
-
     <div v-if="!this.loading">
       <h2 class="page-title">{{ room.name }} 開票</h2>
 
-      <div class="page-contents" v-if="!this.answered && !this.loading">
+      <div
+        id="target-1"
+        class="page-contents"
+        v-if="!this.answered && !this.loading"
+      >
         <v-simple-table class="total-table">
           <template v-slot:default>
             <thead>
@@ -379,7 +381,7 @@ export default {
     // ローディングを止める
     setTimeout(() => {
       this.loading = false;
-    }, 1000);
+    }, 500);
 
     // Particle.js
     this.initParticles();
@@ -387,15 +389,35 @@ export default {
     const canvas = document.getElementsByClassName("particles-js-canvas-el")[0];
 
     setTimeout(() => {
-      canvas.classList.add("is-hidden");
-    }, 5000);
+      canvas.classList.add("is-display");
+    }, 750);
+
+    setTimeout(() => {
+      canvas.classList.remove("is-display");
+    }, 10000);
 
     setTimeout(() => {
       canvas.remove();
-    }, 10000);
+    }, 15000);
   },
   mounted() {
     this.$emit("drawer-controll", false);
+
+    //  window.onload = () => {
+    //    console.log("a");
+
+    //    const target = document.getElementById("target-1");
+    //    const content_position = target.getBoundingClientRect();
+
+    //    window.scrollTo(0, content_position.top);
+    //  };
+
+    setTimeout(() => {
+      const target = document.getElementById("target-1");
+      const targetPosition = target.getBoundingClientRect();
+
+      window.scrollTo(0, targetPosition.top);
+    }, 1800);
   },
   methods: {
     initParticles() {
@@ -566,19 +588,29 @@ export default {
 }
 .v-data-table >>> .total-row td .wrapper .rank-mark.no1,
 .v-data-table >>> .total-row th .wrapper .rank-mark.no1 {
-  background-color: rgba(255, 255, 0, 0.8);
+  background-color: rgba(255, 255, 0, 0.6);
   width: 2.8em;
   height: 2.8em;
 }
 .v-data-table >>> .total-row td .wrapper .rank-mark.no2,
 .v-data-table >>> .total-row th .wrapper .rank-mark.no2 {
-  background-color: rgba(255, 255, 0, 0.4);
+  background-color: rgba(255, 255, 0, 0.6);
 }
 .v-data-table >>> .all-total-row td,
 .v-data-table >>> .all-total-row th {
   border-bottom: medium solid rgba(0, 0, 0, 0) !important;
   /* background-color: rgba(0, 0, 0, 0); */
   font-size: 1em;
+}
+.v-data-table >>> .all-total-row td .wrapper .rank-mark.no1,
+.v-data-table >>> .all-total-row th .wrapper .rank-mark.no1 {
+  background-color: rgba(255, 0, 255, 0.2);
+  width: 2.8em;
+  height: 2.8em;
+}
+.v-data-table >>> .all-total-row td .wrapper .rank-mark.no2,
+.v-data-table >>> .all-total-row th .wrapper .rank-mark.no2 {
+  background-color: rgba(255, 0, 255, 0.2);
 }
 .total-table {
   margin-bottom: 3em;
@@ -589,6 +621,10 @@ export default {
 </style>
 
 <style lang="scss">
+html {
+  scroll-behavior: smooth;
+}
+
 .particles-js-canvas-el {
   position: absolute;
   top: 0;
@@ -599,9 +635,10 @@ export default {
   opacity: 1;
   transition: opacity 3s linear;
   z-index: 100;
+  opacity: 0;
 
-  &.is-hidden {
-    opacity: 0;
+  &.is-display {
+    opacity: 1;
   }
 
   &.is-delete {
