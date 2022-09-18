@@ -15,7 +15,7 @@
       </v-app-bar>
 
       <v-main>
-        <router-view />
+        <router-view @drawer-controll="drawer = $event" />
       </v-main>
     </v-app>
   </div>
@@ -69,7 +69,9 @@ export default {
   methods: {
     swichSidebar() {
       this.drawer = !this.drawer;
-      console.log(this.drawer);
+    },
+    hiddenSidebar() {
+      this.drawer = false;
     },
   },
 };

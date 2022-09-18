@@ -392,7 +392,9 @@ export default {
       canvas.remove();
     }, 10000);
   },
-  mounted() {},
+  mounted() {
+    this.$emit("drawer-controll", false);
+  },
   methods: {
     initParticles() {
       window.particlesJS("particles", {
