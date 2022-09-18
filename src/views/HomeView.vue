@@ -2,79 +2,92 @@
   <div class="home">
     <h2 class="page-title">投票ルーム一覧</h2>
 
-    <CreateRoom />
+    <div class="loading-wrapper" v-if="this.loading">
+      <v-progress-circular
+        :width="3"
+        color="blue"
+        indeterminate
+      ></v-progress-circular>
+    </div>
 
-    <v-simple-table class="room-list">
-      <template v-slot:default>
-        <thead>
-          <tr>
-            <th class="text-left">ルーム名</th>
-            <th class="text-left">投票状況</th>
-            <th class="text-left">投票済ユーザー数／全ユーザー数</th>
-            <th class="text-left"></th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="room in rooms" :key="room.uid">
-            <td>{{ room.name }}</td>
-            <td :class="room.status.value">{{ room.status.title }}</td>
-            <td>
-              <div class="all-users">
-                <span class="all-users__text">
-                  {{ room.answered.length }} ／{{
-                    room.allUsers > 0 ? room.allUsers : 0
-                  }}
-                </span>
-                <button class="all-users__icon" @click="getRooms">
-                  <v-icon>mdi-reload</v-icon>
-                </button>
-              </div>
-            </td>
-            <td class="btns">
-              <div class="btns__wrapper">
-                <v-btn
-                  :to="{ path: '/vote', query: { room_id: room.id } }"
-                  :disabled="room.status.value === 'end' ? true : false"
-                  >投票する
-                </v-btn>
-                <EndRoom :roomStatus="room.status.value" :roomId="room.id" />
-                <v-btn
-                  :to="{ path: '/open', query: { room_id: room.id } }"
-                  :disabled="room.status.value !== 'end' ? true : false"
-                  >投票結果を見る</v-btn
-                >
-                <DeleteRoom :roomStatus="room.status.value" :roomId="room.id" />
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </template>
-    </v-simple-table>
+    <div v-if="!this.loading">
+      <CreateRoom />
 
-    <v-snackbar
-      class="snackbar snackbar--success"
-      color="success"
-      outlined
-      v-model="snackbarSuccess"
-      top
-    >
-      <div class="snackbar__wrapper">
-        <v-icon class="snackbar__icon" color="green">mdi-check-circle</v-icon>
-        <span class="snackbar__text">{{ successMessage }}</span>
-      </div>
+      <v-simple-table class="room-list">
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th class="text-left">ルーム名</th>
+              <th class="text-left">投票状況</th>
+              <th class="text-left">投票済ユーザー数／全ユーザー数</th>
+              <th class="text-left"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="room in rooms" :key="room.uid">
+              <td>{{ room.name }}</td>
+              <td :class="room.status.value">{{ room.status.title }}</td>
+              <td>
+                <div class="all-users">
+                  <span class="all-users__text">
+                    {{ room.answered.length }} ／{{
+                      room.allUsers > 0 ? room.allUsers : 0
+                    }}
+                  </span>
+                  <button class="all-users__icon" @click="getRooms">
+                    <v-icon>mdi-reload</v-icon>
+                  </button>
+                </div>
+              </td>
+              <td class="btns">
+                <div class="btns__wrapper">
+                  <v-btn
+                    :to="{ path: '/vote', query: { room_id: room.id } }"
+                    :disabled="room.status.value === 'end' ? true : false"
+                    >投票する
+                  </v-btn>
+                  <EndRoom :roomStatus="room.status.value" :roomId="room.id" />
+                  <v-btn
+                    :to="{ path: '/open', query: { room_id: room.id } }"
+                    :disabled="room.status.value !== 'end' ? true : false"
+                    >投票結果を見る</v-btn
+                  >
+                  <DeleteRoom
+                    :roomStatus="room.status.value"
+                    :roomId="room.id"
+                  />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table>
 
-      <template v-slot:action="{ attrs }">
-        <v-btn
-          color="green"
-          text
-          v-bind="attrs"
-          class="snackbar__btn"
-          @click="snackbarSuccess = false"
-        >
-          閉じる
-        </v-btn>
-      </template>
-    </v-snackbar>
+      <v-snackbar
+        class="snackbar snackbar--success"
+        color="success"
+        outlined
+        v-model="snackbarSuccess"
+        top
+      >
+        <div class="snackbar__wrapper">
+          <v-icon class="snackbar__icon" color="green">mdi-check-circle</v-icon>
+          <span class="snackbar__text">{{ successMessage }}</span>
+        </div>
+
+        <template v-slot:action="{ attrs }">
+          <v-btn
+            color="green"
+            text
+            v-bind="attrs"
+            class="snackbar__btn"
+            @click="snackbarSuccess = false"
+          >
+            閉じる
+          </v-btn>
+        </template>
+      </v-snackbar>
+    </div>
   </div>
 </template>
 
@@ -95,6 +108,7 @@ export default {
     rooms: [],
     successMessage: "",
     snackbarSuccess: false,
+    loading: true,
   }),
   mounted() {
     this.getRooms();
@@ -122,6 +136,7 @@ export default {
   },
   methods: {
     async getRooms() {
+      this.loading = true;
       this.rooms = [];
       // ドキュメント取得
       // ref = 参照的なニュアンスの意味
@@ -136,6 +151,10 @@ export default {
         //   console.log(data);
         this.rooms.push(data);
       });
+
+      setTimeout(() => {
+        this.loading = false;
+      }, 450);
     },
   },
 };
@@ -214,5 +233,22 @@ export default {
       }
     }
   }
+}
+</style>
+
+<style scoped>
+.home {
+  position: relative;
+  height: 100%;
+}
+.loading-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  background-color: #fff;
 }
 </style>
