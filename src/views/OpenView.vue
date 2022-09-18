@@ -8,6 +8,8 @@
       ></v-progress-circular>
     </div>
 
+    <!-- <div id="particles"></div> -->
+
     <div v-if="!this.loading">
       <h2 class="page-title">{{ room.name }} 開票</h2>
 
@@ -377,7 +379,7 @@ export default {
     // ローディングを止める
     setTimeout(() => {
       this.loading = false;
-    }, 10);
+    }, 1000);
 
     // Particle.js
     this.initParticles();
@@ -484,6 +486,7 @@ export default {
 };
 </script>
 
+
 <style lang="scss" scoped>
 .open {
   position: relative;
@@ -492,11 +495,14 @@ export default {
   //   margin: 0 auto;
 }
 .loading-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   height: 100%;
+  z-index: 1000;
+  background-color: #fff;
 }
 .page-title {
   padding: 1.5em 12px;
@@ -592,6 +598,7 @@ export default {
   pointer-events: none;
   opacity: 1;
   transition: opacity 3s linear;
+  z-index: 100;
 
   &.is-hidden {
     opacity: 0;

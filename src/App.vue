@@ -85,4 +85,7 @@ export default {
   text-align: center;
   color: #2c3e50;
 }
+.v-navigation-drawer {
+  z-index: 9999;
+}
 </style>
