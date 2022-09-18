@@ -114,7 +114,9 @@ export default {
       }
     },
   },
-  mounted() {},
+  mounted() {
+    this.$emit("drawer-controll", false);
+  },
   methods: {
     validate() {
       this.$refs.form.validate();

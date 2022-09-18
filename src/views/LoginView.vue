@@ -116,6 +116,8 @@ export default {
     snackbarError: false,
   }),
   mounted() {
+    this.$emit("drawer-controll", false);
+
     //  localStorage.message = "ユーザーの新規作成に成功しました。";
 
     if (localStorage.message) {
