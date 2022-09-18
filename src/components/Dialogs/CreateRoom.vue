@@ -133,4 +133,11 @@ export default {
     margin-left: 0.5rem;
   }
 }
+
+@media screen and (max-width: 750px) {
+  .add-room {
+    padding: 0 16px;
+    margin-bottom: 32px;
+  }
+}
 </style>

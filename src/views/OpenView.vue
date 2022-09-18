@@ -416,7 +416,11 @@ export default {
       const target = document.getElementById("target-1");
       const targetPosition = target.getBoundingClientRect();
 
-      window.scrollTo(0, targetPosition.top);
+      if (window.matchMedia("(max-width: 750px)").matches) {
+        window.scrollTo(0, targetPosition.top - 60);
+      } else {
+        window.scrollTo(0, targetPosition.top);
+      }
     }, 1800);
   },
   methods: {
@@ -532,6 +536,12 @@ export default {
 }
 .page-sub-title {
   text-align: left;
+}
+
+@media screen and (max-width: 750px) {
+  .open {
+    padding-bottom: 6em;
+  }
 }
 </style>
 

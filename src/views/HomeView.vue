@@ -19,7 +19,9 @@
             <tr>
               <th class="text-left">ルーム名</th>
               <th class="text-left">投票状況</th>
-              <th class="text-left">投票済ユーザー数／全ユーザー数</th>
+              <th class="text-left">
+                投票済ユーザー数<br class="sp" />／全ユーザー数
+              </th>
               <th class="text-left"></th>
             </tr>
           </thead>
@@ -234,9 +236,24 @@ export default {
     }
   }
 }
+
+@media screen and (max-width: 750px) {
+  .page-title {
+    padding: 1.5em 12px 1.5em;
+  }
+
+  .v-data-table {
+    table {
+      width: max-content;
+    }
+  }
+}
 </style>
 
 <style scoped>
+.sp {
+  display: none;
+}
 .home {
   position: relative;
   height: 100%;
@@ -250,5 +267,27 @@ export default {
   height: 100%;
   z-index: 1000;
   background-color: #fff;
+}
+
+@media screen and (max-width: 750px) {
+  .sp {
+    display: inherit;
+  }
+
+  .page-title {
+    padding: 1.5em 12px 1.5em;
+  }
+
+  .v-data-table {
+    margin-bottom: 10em;
+  }
+
+  .v-data-table >>> table {
+    width: max-content;
+  }
+
+  .v-data-table >>> table tbody tr td:last-child {
+    width: 20em;
+  }
 }
 </style>
