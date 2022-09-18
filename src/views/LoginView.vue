@@ -148,17 +148,18 @@ export default {
       this.$refs.form.resetValidation();
     },
     submit() {
-      console.log("submit call");
+      // console.log("submit call");
       firebase
         .auth()
         .signInWithEmailAndPassword(this.email, this.password)
         .then((result) => {
-          console.log("success");
-          console.log("user", result.user);
+          //  console.log("success");
+          //  console.log("user", result.user);
           localStorage.message = "ログインに成功しました。";
 
-          // session は localstoraage と違い、ブラウザを閉じるとリセットされる
+          sessionStorage.removeItem("user");
 
+          // session は localstoraage と違い、ブラウザを閉じるとリセットされる
           const auth = {
             displayName: result.user.displayName,
             email: result.user.email,
@@ -175,7 +176,7 @@ export default {
         })
         .catch((error) => {
           console.log("fail", error);
-          console.log(this.errorMessage);
+          //  console.log(this.errorMessage);
           this.errorMessage = "ログインに失敗しました。";
           this.snackbarError = true;
         });

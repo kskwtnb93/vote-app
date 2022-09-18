@@ -4,7 +4,19 @@
       <v-list-item class="avatar">
         <v-list-item-avatar class="avatar__pic">
           <v-avatar>
-            <v-icon x-large> mdi-account-circle </v-icon>
+            <input
+              type="file"
+              ref="fileInput"
+              accept="image/jpeg, image/jpg, image/png"
+              style="display: none"
+              @change="updateIcon"
+            />
+
+            <v-icon v-if="!photoUrl" x-large @click="changeIcon">
+              mdi-account-circle
+            </v-icon>
+
+            <img v-if="photoUrl" :src="photoUrl" @click="changeIcon" alt="" />
           </v-avatar>
         </v-list-item-avatar>
       </v-list-item>
@@ -66,9 +78,12 @@ export default {
       // ["mdi-logout", "Signup", "/signup"],
     ],
     auth: null,
+    photoUrl: "",
   }),
   mounted() {
     this.auth = JSON.parse(sessionStorage.getItem("user"));
+    // sessionの中にphotoURLがあれば更新
+    this.photoUrl = this.auth.photoURL;
   },
   methods: {
     getAuth() {
@@ -88,6 +103,49 @@ export default {
         })
         .catch((error) => {
           console.log(error);
+        });
+    },
+    changeIcon() {
+      // console.log("changeIcon call");
+      this.$refs.fileInput.click();
+    },
+    updateIcon() {
+      // console.log("updateIcon call");
+      const user = this.getAuth();
+
+      if (!user) {
+        sessionStorage.removeItem("user");
+        this.$router.push("/login");
+      }
+
+      const file = this.$refs.fileInput.files[0];
+      const filePath = `/user/${file.name}`;
+      console.log(file);
+
+      firebase
+        .storage()
+        .ref()
+        .child(filePath)
+        .put(file)
+        .then(async (snapshot) => {
+          //  console.log("snapshot", snapshot);
+
+          const photoUrl = await snapshot.ref.getDownloadURL();
+          console.log("photoUrl", photoUrl);
+
+          firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+              user.updateProfile({
+                photoURL: photoUrl,
+              });
+
+              this.auth.photoURL = photoUrl;
+              sessionStorage.setItem("user", JSON.stringify(this.auth));
+
+              // リロードなしで画像更新するためにdata更新
+              this.photoUrl = photoUrl;
+            }
+          });
         });
     },
   },
