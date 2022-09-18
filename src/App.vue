@@ -92,3 +92,9 @@ export default {
   z-index: 9999;
 }
 </style>
+
+<style>
+.v-snack:not(.v-snack--absolute) {
+  z-index: 10000;
+}
+</style>
