@@ -1,8 +1,5 @@
 # vue-vote-app
 
-## Project preview
-[https://vue-vote-app.vercel.app/](https://vue-vote-app.vercel.app/)
-
 ## Project setup
 ```
 npm install
