@@ -199,6 +199,13 @@ export default {
 .login-btn {
   //   margin-right: 20px;
 }
+
+@media screen and (max-width: 750px) {
+  .login-form {
+    min-width: 90%;
+    padding: 20px;
+  }
+}
 </style>
 
 <style>

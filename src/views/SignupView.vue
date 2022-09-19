@@ -191,4 +191,11 @@ export default {
     font-weight: bold;
   }
 }
+
+@media screen and (max-width: 750px) {
+  .login-form {
+    min-width: 90%;
+    padding: 20px;
+  }
+}
 </style>

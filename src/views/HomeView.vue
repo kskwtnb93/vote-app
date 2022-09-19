@@ -283,7 +283,8 @@ export default {
   }
 
   .v-data-table >>> table {
-    width: max-content;
+    width: calc(800 / 750 * 100vh);
+    table-layout: auto;
   }
 
   .v-data-table >>> table tbody tr td:last-child {
