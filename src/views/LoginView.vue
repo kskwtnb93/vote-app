@@ -128,7 +128,7 @@ export default {
   },
   computed: {
     isValid() {
-      console.log("isValid", this.valid);
+      // console.log("isValid", this.valid);
 
       if (this.email != null && this.password != null) {
         return !this.valid;

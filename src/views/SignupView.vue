@@ -133,11 +133,11 @@ export default {
         .auth()
         .createUserWithEmailAndPassword(this.email, this.password)
         .then(async (result) => {
-          console.log("success", result);
+          //  console.log("success", result);
 
           // Authenticationへの登録
           await result.user.updateProfile({ displayName: this.name });
-          console.log("update user", result.user);
+          //  console.log("update user", result.user);
 
           // Cloud Firestoreへの登録
           const usersRef = firebase.firestore().collection("users");
