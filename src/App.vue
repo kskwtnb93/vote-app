@@ -5,17 +5,19 @@
         <SidebarComponent />
       </v-navigation-drawer>
 
-      <v-app-bar app>
-        <v-app-bar-nav-icon
-          @click="swichSidebar"
-          v-if="showSidebar"
-        ></v-app-bar-nav-icon>
+      <v-app-bar v-if="showSidebar" app>
+        <v-app-bar-nav-icon @click="swichSidebar"></v-app-bar-nav-icon>
 
         <!-- <v-toolbar-title>投票アプリ</v-toolbar-title> -->
       </v-app-bar>
 
       <v-main>
-        <router-view @drawer-controll="drawer = $event" />
+        <router-view
+          @drawer-controll="
+            drawer = $event;
+            removeSidebar();
+          "
+        />
       </v-main>
     </v-app>
   </div>
@@ -70,8 +72,8 @@ export default {
     swichSidebar() {
       this.drawer = !this.drawer;
     },
-    hiddenSidebar() {
-      this.drawer = false;
+    removeSidebar() {
+      this.showSidebar = false;
     },
   },
 };
@@ -94,7 +96,8 @@ export default {
 </style>
 
 <style>
+.v-snack,
 .v-snack:not(.v-snack--absolute) {
-  z-index: 10000;
+  z-index: 10000 !important;
 }
 </style>
