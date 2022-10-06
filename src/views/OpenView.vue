@@ -337,7 +337,7 @@ export default {
 
       // ポイント１位を決める
       array.map((value) => {
-        if (value[1].value >= no1Value) {
+        if (value[1].value >= no1Value && value[1].value != 0) {
           no1MemberUids.push(value[0]);
           no1Value = value[1].value;
         }
@@ -353,7 +353,7 @@ export default {
 
       // ポイント２位を決める
       array.map((value) => {
-        if (value[1].value < no1Value) {
+        if (value[1].value < no1Value && value[1].value != 0) {
           if (value[1].value >= no2Value) {
             no2Value = value[1].value;
           }
